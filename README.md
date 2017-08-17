@@ -1,9 +1,9 @@
 # 缓存模式OkCache(支持okhttp和retrofit使用get请求时缓存)
 
 ## 使用方法
-1.okhttp中cache使用
+### 1.okhttp中cache使用
 
- (1）.需要在application中进行初始化
+1）.需要在application中进行初始化
  
 ```java
   OkHttpCacheUtils.init(this);
@@ -30,7 +30,7 @@ OkHttpCacheUtils.getInstance().okHttpASyncGet("", null, null, 1, new IAsyncCallB
                  });
 ```
 
-2.retrofit中cache使用
+### 2.retrofit中cache使用
 
 1).需要在application中进行初始化
 
