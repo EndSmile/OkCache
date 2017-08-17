@@ -158,7 +158,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             public void run() {
                 ApiFactory apiFactory = new ApiFactory();
                 try {
-                    List<Contributor> contributors = apiFactory.getCacheApi().contributors("square", "retrofit").execute().body();
+                    List<Contributor> contributors = apiFactory.getCacheApi().contributors
+                            ("square", "retrofit",mCurrentCacheType).execute().body();
                     if (contributors != null && contributors.size() != 0) {
                         Log.d("ysk", contributors.get(0).getLogin());
                     }
