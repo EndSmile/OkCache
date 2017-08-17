@@ -1,4 +1,4 @@
-package com.xdja.cache.okhttp.strategy;
+package com.xdja.cache.common.strategy;
 
 import java.io.IOException;
 

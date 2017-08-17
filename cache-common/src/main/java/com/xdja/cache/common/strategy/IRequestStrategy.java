@@ -1,4 +1,4 @@
-package com.xdja.cache.okhttp.strategy;
+package com.xdja.cache.common.strategy;
 
 import java.io.IOException;
 
@@ -6,8 +6,6 @@ import okhttp3.Interceptor;
 import okhttp3.Response;
 
 /**
- * FIXME
- *
  */
 public interface IRequestStrategy {
     /**

@@ -12,8 +12,7 @@ package com.xdja.cache.common.utils;
 
 public class Common {
 
-    //    public static final String NET_CACHE = BaseApplication.getAppCacheDir() + File.separator + "NetCache";
-    public static final String NET_CACHE = "NetCache";
+    public static final String REQUEST_CACHE_TYPE_HEAD = "requestCacheType";//请求缓存类型
     //网络缓存路径
 //    public static final String NET_CACHE = BaseApplication.getAppCacheDir() + File.separator + "NetCache";
 

@@ -13,12 +13,13 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import com.google.gson.Gson;
+import com.xdja.cache.common.bean.Contributor;
 import com.xdja.cache.common.bean.ResponseBodys;
-import com.xdja.cache.okhttp.request.CacheType;
+import com.xdja.cache.common.interceptor.CacheType;
 import com.xdja.cache.okhttp.request.IAsyncCallBack;
 import com.xdja.cache.okhttp.request.NameValuePair;
 import com.xdja.cache.okhttp.request.OkHttpCacheUtils;
-import com.xdja.cache.retrofit.RetrofitCacheUtils;
+import com.xdja.cache.retrofitApi.ApiFactory;
 
 import java.io.IOException;
 import java.lang.ref.WeakReference;
@@ -155,11 +156,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         new Thread(new Runnable() {
             @Override
             public void run() {
-                RetrofitCacheUtils.getInstance().fetchContributor(true, 30);
-//                        List<Contributor> contributors = RetrofitCacheUtils.getInstance().fetchContributor(false);
-//                        if (contributors != null && contributors.size() != 0) {
-//                            Log.d("ysk", contributors.get(0).getLogin());
-//                        }
+                ApiFactory apiFactory = new ApiFactory();
+                try {
+                    List<Contributor> contributors = apiFactory.getCacheApi().contributors("square", "retrofit").execute().body();
+                    if (contributors != null && contributors.size() != 0) {
+                        Log.d("ysk", contributors.get(0).getLogin());
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
         }).start();
     }
@@ -176,7 +181,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     params.add(nameValuePair);
                     params.add(nameValuePair2);
 
-                    String result = OkHttpCacheUtils.getInstance().okhttpGetByCacheType(url, params, null, mCurrentCacheType);
+                    String result = OkHttpCacheUtils.getInstance().okhttpGetByCacheType(url, null, null, mCurrentCacheType);
                     Gson gson = new Gson();
                     ResponseBodys responseBodys = gson.fromJson(result, ResponseBodys.class);
                     responseBody[0] = responseBodys.getUrl();

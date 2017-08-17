@@ -8,7 +8,6 @@ import okhttp3.Response;
 /**
  * <p>Summary:</p>
  * <p>Description:</p>
- * <p>Package:com.xdja.cache.okhttp.request</p>
  * <p>Author:yusenkui</p>
  * <p>Date:2017/8/14</p>
  * <p>Time:10:04</p>
@@ -16,7 +15,18 @@ import okhttp3.Response;
 
 
 public interface IAsyncCallBack {
-    void onFailure(Call arg0, IOException e);
+    /**
+     * 请求失败
+     *
+     * @param call call
+     * @param e    异常
+     */
+    void onFailure(Call call, IOException e);
 
+    /**
+     * 请求成功
+     *
+     * @param response 响应
+     */
     void onResponse(Response response);
 }

@@ -1,4 +1,4 @@
-package com.xdja.cache.okhttp.strategy;
+package com.xdja.cache.common.strategy;
 
 import java.io.IOException;
 
@@ -7,7 +7,6 @@ import okhttp3.Response;
 
 /**
  * 先进行网络请求，如果网络请求失败则直接请求缓存数据
- *
  */
 public class NetworkCacheStrategy implements IRequestStrategy {
     /**
@@ -25,12 +24,6 @@ public class NetworkCacheStrategy implements IRequestStrategy {
             response = networkStrategy.request(chain);
             if(!response.isSuccessful()){
                 return cacheStrategy.request(chain);
-            }
-        } catch (IOException e) {
-            try {
-                response = cacheStrategy.request(chain);
-            } catch (IOException e1) {
-                //忽略不处理
             }
         } catch (Exception e){
             try {

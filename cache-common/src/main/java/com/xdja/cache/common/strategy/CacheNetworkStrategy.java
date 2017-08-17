@@ -1,4 +1,4 @@
-package com.xdja.cache.okhttp.strategy;
+package com.xdja.cache.common.strategy;
 
 import java.io.IOException;
 
@@ -7,7 +7,6 @@ import okhttp3.Response;
 
 /**
  * 读取缓存，如果缓存不存在则读取网络
- *
  */
 public class CacheNetworkStrategy implements IRequestStrategy {
     /**

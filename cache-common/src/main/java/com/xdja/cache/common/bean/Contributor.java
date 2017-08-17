@@ -1,4 +1,4 @@
-package com.xdja.cache.retrofit.bean;
+package com.xdja.cache.common.bean;
 
 /**
  * <p>Summary:</p>

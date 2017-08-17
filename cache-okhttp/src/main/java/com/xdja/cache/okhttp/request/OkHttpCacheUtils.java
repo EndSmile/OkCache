@@ -1,5 +1,6 @@
 package com.xdja.cache.okhttp.request;
 
+import android.content.Context;
 import android.net.Uri;
 import android.os.Handler;
 import android.os.Looper;
@@ -8,10 +9,10 @@ import android.text.TextUtils;
 import android.util.Log;
 
 import com.xdja.cache.common.exception.NetworkException;
+import com.xdja.cache.common.interceptor.CacheType;
+import com.xdja.cache.common.utils.Common;
 import com.xdja.cache.common.utils.CommonUtil;
-import com.xdja.cache.okhttp.AppContext;
-import com.xdja.cache.okhttp.interceptor.CacheInterceptor;
-import com.xdja.cache.okhttp.utils.SdUtils;
+import com.xdja.cache.common.utils.SdUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -33,7 +34,6 @@ import okhttp3.logging.HttpLoggingInterceptor;
 /**
  * <p>Summary:</p>
  * <p>Description:</p>
- * <p>Package:com.xdja.retrofitsample</p>
  * <p>Author:yusenkui</p>
  * <p>Date:2017/7/29</p>
  * <p>Time:14:59</p>
@@ -44,12 +44,16 @@ public class OkHttpCacheUtils {
 
     public OkHttpClient client = null;
     private static String TAG = "OkHttpCacheUtils";
-    public static final String REQUEST_CACHE_TYPE_HEAD = "requestCacheType";//请求缓存类型
     private Handler mainHanlder;
+    private static Context mContext;
 
-    public OkHttpCacheUtils() {
+    private OkHttpCacheUtils() {
         initOkHttp();
         mainHanlder = new Handler(Looper.getMainLooper());
+    }
+
+    public static void init(Context context) {
+        mContext = context.getApplicationContext();
     }
 
     public static OkHttpCacheUtils getInstance() {
@@ -65,15 +69,18 @@ public class OkHttpCacheUtils {
         private static final OkHttpCacheUtils INSTANCE = new OkHttpCacheUtils();
     }
 
-
+    /**
+     * 初始化okhttp
+     * 定义缓存大小和路径以及拦截器
+     */
     private void initOkHttp() {
         OkHttpClient.Builder builder = new OkHttpClient.Builder();
-        File cacheFile = new File(SdUtils.getDiskCacheDir(), "httpCache");
+        File cacheFile = new File(SdUtils.getDiskCacheDir(mContext), "httpCache");
         Cache cache = new Cache(cacheFile, 1024 * 1024 * 50);
         HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor(HttpLoggingInterceptor.Logger.DEFAULT);
         loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
         builder.cache(cache)
-                .addInterceptor(new CacheInterceptor())
+                .addInterceptor(new com.xdja.cache.common.interceptor.CacheInterceptor())
                 .addInterceptor(loggingInterceptor);
         //设置超时
         builder.connectTimeout(15, TimeUnit.SECONDS);
@@ -84,6 +91,16 @@ public class OkHttpCacheUtils {
         client = builder.build();
     }
 
+    /**
+     * get同步请求带缓存
+     *
+     * @param url       请求地址
+     * @param params    参数
+     * @param headers   请求头
+     * @param cacheType 缓存类型
+     * @return 请求体
+     * @throws NetworkException
+     */
     public String okhttpGetByCacheType(String url, List<NameValuePair> params
             , List<NameValuePair> headers, int cacheType) throws NetworkException {
         return getResult(url, params, headers, cacheType);
@@ -148,9 +165,14 @@ public class OkHttpCacheUtils {
 
 
     /**
-     * 异步get请求
+     * get异步请求带缓存
      *
-     * @param url
+     * @param url       请求地址
+     * @param params    参数
+     * @param headers   请求头
+     * @param cacheType 缓存类型
+     * @return 请求体
+     * @throws NetworkException
      */
     public void okHttpASyncGet(String url, List<NameValuePair> params, List<NameValuePair> headers, int cacheType, IAsyncCallBack IAsyncCallBack) {
         try {
@@ -169,7 +191,7 @@ public class OkHttpCacheUtils {
         }
         int currentCacheType;
         //网络无效的话指定读取缓存策略
-        if (!CommonUtil.isNetworkConnected(AppContext.getContext())) {
+        if (!CommonUtil.isNetworkConnected(mContext)) {
             currentCacheType = CacheType.ONLY_CACHE;
         } else {
             currentCacheType = cacheType;
@@ -185,7 +207,7 @@ public class OkHttpCacheUtils {
         if (headers != null && !headers.isEmpty()) {
             builder.headers(getRequestHeaders(headers));
         }
-        return builder.url(url).addHeader(REQUEST_CACHE_TYPE_HEAD, String.valueOf(currentCacheType)).build();
+        return builder.url(url).addHeader(Common.REQUEST_CACHE_TYPE_HEAD, String.valueOf(currentCacheType)).build();
     }
 
     private void startRequest(Call call, final IAsyncCallBack IAsyncCallBack) {

@@ -1,21 +1,20 @@
-package com.xdja.cache.okhttp.utils;
+package com.xdja.cache.common.utils;
 
+import android.content.Context;
 import android.os.Environment;
-
-import com.xdja.cache.okhttp.AppContext;
 
 
 /**
  */
 public class SdUtils {
 
-    public static String getDiskCacheDir(){
+    public static String getDiskCacheDir(Context context){
         String cachePath = null;
         if (Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState())
                 || !Environment.isExternalStorageRemovable()) {
-            cachePath = AppContext.getContext().getExternalCacheDir().getPath();
+            cachePath = context.getExternalCacheDir().getPath();
         } else {
-            cachePath = AppContext.getContext().getCacheDir().getPath();
+            cachePath = context.getCacheDir().getPath();
         }
         return cachePath;
     }

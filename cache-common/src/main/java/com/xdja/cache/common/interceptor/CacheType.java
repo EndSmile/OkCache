@@ -1,4 +1,4 @@
-package com.xdja.cache.okhttp.request;
+package com.xdja.cache.common.interceptor;
 
 /**
  * 缓存的几种模式
