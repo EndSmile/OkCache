@@ -30,5 +30,5 @@ dependencies {
     compile "com.squareup.okhttp3:okhttp:3.8.0"
 }
 
-ext.projectArtifactId   = "cache-common"
+ext.projectArtifactId = "cache-common"
 apply from: rootProject.file('gradle/androidArchivesUpload.gradle')

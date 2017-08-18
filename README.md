@@ -1,5 +1,21 @@
 # 缓存模式OkCache(支持okhttp和retrofit使用get请求时缓存)
 
+## 依赖
+1.仓库地址
+```java
+allprojects {
+    repositories {
+        //外网
+        maven{ url 'http://120.194.4.152:8081/nexus/content/groups/public/'}
+        jcenter()
+    }
+}
+```
+2.项目依赖
+```java
+    compile 'com.xdja.okcache:cache-retrofit:0.1.0'//retrofit cache依赖
+    compile 'com.xdja.okcache:cache-okhttp:0.1.0'//okhttp cache依赖
+```
 ## 使用方法
 ### 1.okhttp中cache使用
 
