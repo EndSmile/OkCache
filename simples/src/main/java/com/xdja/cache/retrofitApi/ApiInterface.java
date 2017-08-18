@@ -1,6 +1,6 @@
 package com.xdja.cache.retrofitApi;
 
-import com.xdja.cache.common.bean.Contributor;
+import com.xdja.cache.bean.Contributor;
 
 import java.util.List;
 

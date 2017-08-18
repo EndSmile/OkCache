@@ -1,4 +1,4 @@
-package com.xdja.cache.common.bean;
+package com.xdja.cache.bean;
 
 /**
  * <p>Summary:</p>

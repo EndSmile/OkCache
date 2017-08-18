@@ -13,8 +13,8 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import com.google.gson.Gson;
-import com.xdja.cache.common.bean.Contributor;
-import com.xdja.cache.common.bean.ResponseBodys;
+import com.xdja.cache.bean.Contributor;
+import com.xdja.cache.bean.ResponseBodys;
 import com.xdja.cache.common.interceptor.CacheType;
 import com.xdja.cache.okhttp.request.IAsyncCallBack;
 import com.xdja.cache.okhttp.request.NameValuePair;

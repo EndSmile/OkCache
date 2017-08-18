@@ -1,6 +1,5 @@
 package com.xdja.cache.common.interceptor;
 
-import android.support.annotation.NonNull;
 import android.util.Log;
 
 import com.xdja.cache.common.strategy.CacheNetworkStrategy;
@@ -23,7 +22,7 @@ import okhttp3.Response;
 public class CacheInterceptor implements Interceptor {
 
     @Override
-    public Response intercept(@NonNull Chain chain) throws IOException {
+    public Response intercept(Chain chain) throws IOException {
         RequestStrategy requestStrategy = new RequestStrategy();
         String cacheTypeHeader = chain.request().headers().get(Common.REQUEST_CACHE_TYPE_HEAD);
         if (cacheTypeHeader != null) {

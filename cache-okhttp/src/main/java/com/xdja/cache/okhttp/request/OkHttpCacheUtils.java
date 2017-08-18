@@ -8,7 +8,7 @@ import android.support.annotation.NonNull;
 import android.text.TextUtils;
 import android.util.Log;
 
-import com.xdja.cache.common.exception.NetworkException;
+import com.xdja.cache.okhttp.exception.NetworkException;
 import com.xdja.cache.common.interceptor.CacheType;
 import com.xdja.cache.common.utils.Common;
 import com.xdja.cache.common.utils.CommonUtil;

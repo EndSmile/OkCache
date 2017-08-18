@@ -1,4 +1,4 @@
-package com.xdja.cache.common.exception;
+package com.xdja.cache.okhttp.exception;
 
 /**
  */
