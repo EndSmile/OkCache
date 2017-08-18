@@ -1,0 +1,48 @@
+apply plugin: 'maven'
+//apply plugin: 'java'
+
+// load properties
+Properties properties = new Properties()
+properties.load(project.rootProject.file('local.properties').newDataInputStream())
+
+def NEXUS_USERNAME = properties.getProperty("nexus.username")
+def NEXUS_PASSWORD = properties.getProperty("nexus.password")
+def projectGroupId = "com.xdja.okcache"
+def projectVersionName = '0.1.0'
+
+def REPOSITORY_URL = "http://120.194.4.152:8081/nexus/content/repositories/xdja/"
+
+group = projectGroupId
+version = projectVersionName
+
+
+task sourcesJar(type: Jar) {
+    from android.sourceSets.main.java.srcDirs
+    classifier = 'sources'
+}
+
+artifacts {
+    archives sourcesJar
+}
+
+//install {
+//    repositories.mavenInstaller {
+//        pom.version = projectVersionName
+//        pom.artifactId = projectArtifactId
+//        pom.groupId = projectGroupId
+//    }
+//}
+
+uploadArchives {
+    repositories {
+        mavenDeployer {
+            repository(url: REPOSITORY_URL) {
+                authentication(userName: NEXUS_USERNAME, password: NEXUS_PASSWORD)
+            }
+            pom.groupId = projectGroupId
+            pom.artifactId = projectArtifactId
+            pom.version = projectVersionName
+        }
+
+    }
+}
