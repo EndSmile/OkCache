@@ -1,1 +1,1 @@
-include ':simples', ':cache-common', ':cache-okhttp', ':cache-retrofit'
+include ':samples', ':cache-common', ':cache-okhttp', ':cache-retrofit'
