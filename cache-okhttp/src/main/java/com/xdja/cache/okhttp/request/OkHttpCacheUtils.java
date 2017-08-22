@@ -8,11 +8,11 @@ import android.support.annotation.NonNull;
 import android.text.TextUtils;
 import android.util.Log;
 
-import com.xdja.cache.okhttp.exception.NetworkException;
 import com.xdja.cache.common.interceptor.CacheType;
 import com.xdja.cache.common.utils.Common;
 import com.xdja.cache.common.utils.CommonUtil;
 import com.xdja.cache.common.utils.SdUtils;
+import com.xdja.cache.okhttp.exception.NetworkException;
 
 import java.io.File;
 import java.io.IOException;
@@ -75,7 +75,9 @@ public class OkHttpCacheUtils {
      */
     private void initOkHttp() {
         OkHttpClient.Builder builder = new OkHttpClient.Builder();
+        //设置缓存路径
         File cacheFile = new File(SdUtils.getDiskCacheDir(mContext), "httpCache");
+        //设置缓存对象
         Cache cache = new Cache(cacheFile, 1024 * 1024 * 50);
         HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor(HttpLoggingInterceptor.Logger.DEFAULT);
         loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
@@ -102,16 +104,16 @@ public class OkHttpCacheUtils {
      * @throws NetworkException
      */
     public String okhttpGetByCacheType(String url, List<NameValuePair> params
-            , List<NameValuePair> headers, int cacheType) throws NetworkException {
-        return getResult(url, params, headers, cacheType);
+            , List<NameValuePair> headers, int cacheTime, int cacheType) throws NetworkException {
+        return getResult(url, params, headers, cacheTime, cacheType);
     }
 
-    private String getResult(String url, List<NameValuePair> params, List<NameValuePair> headers, int cacheType) {
+    private String getResult(String url, List<NameValuePair> params, List<NameValuePair> headers, int cacheTime, int cacheType) {
         String result = "";
         Response response = null;
 
         try {
-            response = okHttpGet(url, params, headers, cacheType);
+            response = okHttpGet(url, params, headers, cacheTime, cacheType);
             if (response != null && response.isSuccessful()) {
                 result = response.body().string();
             } else {
@@ -123,10 +125,10 @@ public class OkHttpCacheUtils {
         return result;
     }
 
-    private Response okHttpGet(String url, List<NameValuePair> params, List<NameValuePair> headers, int cacheType) throws NetworkException {
+    private Response okHttpGet(String url, List<NameValuePair> params, List<NameValuePair> headers, int cacheTime, int cacheType) throws NetworkException {
 
         try {
-            Request request = getRequest(url, params, headers, cacheType);
+            Request request = getRequest(url, params, headers, cacheTime, cacheType);
             return client.newCall(request).execute();
         } catch (IOException e) {
             e.printStackTrace();
@@ -175,9 +177,9 @@ public class OkHttpCacheUtils {
      * @return 请求体
      * @throws NetworkException
      */
-    public void okHttpASyncGet(String url, List<NameValuePair> params, List<NameValuePair> headers, int cacheType, IAsyncCallBack IAsyncCallBack) {
+    public void okHttpASyncGet(String url, List<NameValuePair> params, List<NameValuePair> headers, int cacheTime, int cacheType, IAsyncCallBack IAsyncCallBack) {
         try {
-            Request request = getRequest(url, params, headers, cacheType);
+            Request request = getRequest(url, params, headers, cacheTime, cacheType);
             Call call = client.newCall(request);
             startRequest(call, IAsyncCallBack);
         } catch (NetworkException e) {
@@ -186,7 +188,7 @@ public class OkHttpCacheUtils {
 
     }
 
-    private Request getRequest(String url, List<NameValuePair> params, List<NameValuePair> headers, int cacheType) throws NetworkException {
+    private Request getRequest(String url, List<NameValuePair> params, List<NameValuePair> headers, int cacheTime, int cacheType) throws NetworkException {
         if (params == null) {
             params = new ArrayList<>();
         }
@@ -196,6 +198,10 @@ public class OkHttpCacheUtils {
             currentCacheType = CacheType.ONLY_CACHE;
         } else {
             currentCacheType = cacheType;
+        }
+        if (cacheTime != 0) {
+            NameValuePair nameValuePair = new NameValuePair("cacheTime", String.valueOf(cacheTime));
+            params.add(nameValuePair);
         }
         String parameters = getRequestParameters(params);
         Uri uri = Uri.parse(url);

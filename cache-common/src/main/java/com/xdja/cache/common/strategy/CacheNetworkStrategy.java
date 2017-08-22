@@ -9,6 +9,12 @@ import okhttp3.Response;
  * 读取缓存，如果缓存不存在则读取网络
  */
 public class CacheNetworkStrategy implements IRequestStrategy {
+    private float mMaxStale;//缓存过期时间
+
+    public CacheNetworkStrategy(float mMaxStale) {
+        this.mMaxStale = mMaxStale;
+    }
+
     /**
      *
      * @param chain
@@ -17,7 +23,7 @@ public class CacheNetworkStrategy implements IRequestStrategy {
     @Override
     public Response request(Interceptor.Chain chain) {
         Response response = null;
-        CacheStrategy cacheStrategy = new CacheStrategy();
+        CacheStrategy cacheStrategy = new CacheStrategy(mMaxStale);
         NetworkStrategy networkStrategy = new NetworkStrategy();
         try {
             response = cacheStrategy.request(chain);

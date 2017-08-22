@@ -22,7 +22,11 @@ public class CacheStrategy implements IRequestStrategy {
     }
 
     public CacheStrategy(float maxStale) {
-        this.mMaxStale = maxStale;
+        if (maxStale == 0) {
+            this.mMaxStale = MAX_STALE;
+        } else {
+            this.mMaxStale = maxStale;
+        }
     }
 
     /**
