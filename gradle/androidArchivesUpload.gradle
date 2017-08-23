@@ -1,5 +1,4 @@
 apply plugin: 'maven'
-//apply plugin: 'java'
 
 // load properties
 Properties properties = new Properties()
@@ -24,14 +23,6 @@ task sourcesJar(type: Jar) {
 artifacts {
     archives sourcesJar
 }
-
-//install {
-//    repositories.mavenInstaller {
-//        pom.version = projectVersionName
-//        pom.artifactId = projectArtifactId
-//        pom.groupId = projectGroupId
-//    }
-//}
 
 uploadArchives {
     repositories {

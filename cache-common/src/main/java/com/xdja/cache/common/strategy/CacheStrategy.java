@@ -30,13 +30,17 @@ public class CacheStrategy implements IRequestStrategy {
      */
     @Override
     public Response request(Interceptor.Chain chain) throws IOException {
-        Request request = chain.request();
-        request = request.newBuilder().cacheControl(CacheControl.FORCE_CACHE).build();//没有网络，直接读取缓存
-        Response response = chain.proceed(request);
-        response = response.newBuilder()// only-if-cached完全使用缓存，如果命中失败，则返回503错误
-                .header("Cache-Control", "public, only-if-cached, max-stale=" + mMaxStale)
-                .removeHeader("Pragma")
-                .build();
-        return response;
+//        Request request = chain.request();
+//        request = request.newBuilder().cacheControl(CacheControl.FORCE_CACHE).build();//没有网络，直接读取缓存
+//        Response response = chain.proceed(request);
+//        response = response.newBuilder()// only-if-cached完全使用缓存，如果命中失败，则返回503错误
+//                .header("Cache-Control", "public, only-if-cached, max-stale=" + mMaxStale)
+//                .removeHeader("Pragma")
+//                .build();
+//        return response;
+
+
+        chain.
+        return null;
     }
 }
