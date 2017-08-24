@@ -1,6 +1,8 @@
 package com.xdja.cache.common.strategy;
 
 
+import com.xdja.cache.common.utils.Common;
+
 import java.io.IOException;
 
 import okhttp3.Interceptor;
@@ -25,6 +27,10 @@ public class NetworkStrategy implements IRequestStrategy {
     @Override
     public Response request(Interceptor.Chain chain) throws IOException {
         Request request = chain.request();
+        request = request.newBuilder()
+                .addHeader("Cache-Control", "public, max-age=" + mMaxAge)
+                .removeHeader(Common.REQUEST_CACHE_TYPE_HEAD)//移除添加的自定义header
+                .build();
         Response response = chain.proceed(request);
         response = response.newBuilder()
                 .removeHeader("Control")

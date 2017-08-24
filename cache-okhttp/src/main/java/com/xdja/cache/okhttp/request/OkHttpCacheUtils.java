@@ -109,6 +109,7 @@ public class OkHttpCacheUtils {
     private String getResult(String url, List<NameValuePair> params, List<NameValuePair> headers, int cacheType) {
         String result = "";
         Response response = null;
+
         try {
             response = okHttpGet(url, params, headers, cacheType);
             if (response != null && response.isSuccessful()) {

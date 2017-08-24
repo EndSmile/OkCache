@@ -28,6 +28,7 @@ dependencies {
     testCompile 'junit:junit:4.12'
     compile project(':cache-retrofit')
     compile project(':cache-okhttp')
-
+//    compile 'com.xdja.okcache:cache-retrofit:0.1.0'
+//    compile 'com.xdja.okcache:cache-okhttp:0.1.0'
 
 }

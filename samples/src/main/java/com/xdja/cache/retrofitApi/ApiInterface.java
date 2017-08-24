@@ -1,6 +1,7 @@
 package com.xdja.cache.retrofitApi;
 
 import com.xdja.cache.bean.Contributor;
+import com.xdja.cache.common.utils.Common;
 
 import java.util.List;
 
@@ -14,6 +15,6 @@ public interface ApiInterface {
     @GET("/repos/{owner}/{repo}/contributors")
     Call<List<Contributor>> contributors(@Path("owner") String owner
                                         ,@Path("repo") String repo
-                                        ,@Header("requestCacheType") int requestCacheType);
+                                        ,@Header(Common.REQUEST_CACHE_TYPE_HEAD) int requestCacheType);
 
 }
