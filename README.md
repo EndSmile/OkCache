@@ -91,3 +91,6 @@ OkHttpCacheUtils.getInstance().okHttpASyncGet("", null, null, 1, new IAsyncCallB
 ## 已知问题
 
  - 目前Okhttp只是支持get请求缓存，后续考虑支持post缓存模式
+ 
+## 接口文档
+参加[wiki](http://gitlab.idc.safecenter.cn/mobile-technology/OkCache/wikis/home)
