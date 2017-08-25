@@ -3,6 +3,7 @@ package com.xdja.cache.retrofit.generator;
 
 import android.content.Context;
 
+import com.xdja.cache.common.interceptor.CacheInterceptor;
 import com.xdja.cache.common.utils.Common;
 import com.xdja.cache.common.utils.SdUtils;
 
@@ -62,7 +63,7 @@ public class RetrofitCacheGenerator {
         loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
         builder.cache(cache)
                 .addInterceptor(loggingInterceptor)
-                .addInterceptor(new com.xdja.cache.common.interceptor.CacheInterceptor());
+                .addInterceptor(new CacheInterceptor());
         builder.connectTimeout(15, TimeUnit.SECONDS)   //设置超时
                 .readTimeout(20, TimeUnit.SECONDS)
                 .writeTimeout(20, TimeUnit.SECONDS)

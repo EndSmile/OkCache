@@ -127,7 +127,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             @Override
             public void run() {
                 String url = "https://api.github.com/repos/square/okhttp/issues/3490";
-                OkHttpCacheUtils.getInstance().okHttpASyncGet(url, null, null, mCurrentCacheType, new IAsyncCallBack() {
+                OkHttpCacheUtils.getInstance().okHttpASyncGet(url, null, null,0, mCurrentCacheType, new IAsyncCallBack() {
                     @Override
                     public void onFailure(Call arg0, IOException e) {
 
@@ -159,7 +159,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 ApiFactory apiFactory = new ApiFactory();
                 try {
                     List<Contributor> contributors = apiFactory.getCacheApi().contributors
-                            ("square", "retrofit",mCurrentCacheType).execute().body();
+                            ("square", "retrofit", 0, mCurrentCacheType).execute().body();
                     if (contributors != null && contributors.size() != 0) {
                         Log.d("ysk", contributors.get(0).getLogin());
                     }
@@ -182,7 +182,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     params.add(nameValuePair);
                     params.add(nameValuePair2);
 
-                    String result = OkHttpCacheUtils.getInstance().okhttpGetByCacheType(url, null, null, mCurrentCacheType);
+                    String result = OkHttpCacheUtils.getInstance().okhttpGetByCacheType(url, null, null, 0, mCurrentCacheType);
                     Gson gson = new Gson();
                     ResponseBodys responseBodys = gson.fromJson(result, ResponseBodys.class);
                     responseBody[0] = responseBodys.getUrl();
