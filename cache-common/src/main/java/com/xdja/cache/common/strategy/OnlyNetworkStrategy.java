@@ -2,7 +2,6 @@ package com.xdja.cache.common.strategy;
 
 
 import com.xdja.cache.common.OkCache;
-import com.xdja.cache.common.utils.Common;
 
 import java.io.IOException;
 
@@ -14,7 +13,7 @@ import okhttp3.Response;
 /**
  * 仅仅请求网络策略
  */
-public class OnlyNetworkStrategy implements IOkCacheStrategy {
+public class OnlyNetworkStrategy implements IRequestStrategy {
     private static final float MAX_AGE = 0;
     private float mMaxAge; //表示当访问此网页后的max-age秒内再次访问不会去服务器请求
 

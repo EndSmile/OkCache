@@ -7,7 +7,7 @@ import okhttp3.Response;
 
 /**
  */
-public interface IOkCacheStrategy {
+public interface IRequestStrategy {
     /**
      * 请求策略
      * @param chain

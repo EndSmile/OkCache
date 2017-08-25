@@ -25,7 +25,7 @@ public class NetworkCacheStrategy implements IRequestStrategy {
     public Response request(Interceptor.Chain chain) throws IOException {
         Response response = null;
         CacheStrategy cacheStrategy = new CacheStrategy(mMaxStale);
-        NetworkStrategy networkStrategy = new NetworkStrategy();
+        OnlyNetworkStrategy networkStrategy = new OnlyNetworkStrategy();
         try {
             response = networkStrategy.request(chain);
             if(!response.isSuccessful()){

@@ -11,17 +11,17 @@ import okhttp3.Response;
  */
 public class RequestStrategy {
 
-    private IOkCacheStrategy mICacheStrategy;
+    private IRequestStrategy mICacheStrategy;
 
     public RequestStrategy(){
 
     }
 
-    public RequestStrategy(IOkCacheStrategy iCacheStrategy){
+    public RequestStrategy(IRequestStrategy iCacheStrategy){
         this.mICacheStrategy = iCacheStrategy;
     }
 
-    public void setBaseRequestStrategy(IOkCacheStrategy iCacheStrategy) {
+    public void setBaseRequestStrategy(IRequestStrategy iCacheStrategy) {
         mICacheStrategy = iCacheStrategy;
     }
 

@@ -13,7 +13,7 @@ import okhttp3.internal.Util;
 /**
  * 仅仅请求缓存策略
  */
-public class OnlyCacheStrategy implements IOkCacheStrategy {
+public class OnlyCacheStrategy implements IRequestStrategy {
 
     private static final float MAX_STALE = 60 * 60 * 24 * 30;//过期时间为30天
     private float mMaxStale;//缓存过期时间
