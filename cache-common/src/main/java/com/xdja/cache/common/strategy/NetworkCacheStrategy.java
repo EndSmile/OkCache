@@ -8,7 +8,7 @@ import okhttp3.Response;
 /**
  * 先进行网络请求，如果网络请求失败则直接请求缓存数据
  */
-public class NetworkCacheStrategy implements IRequestStrategy {
+public class NetworkCacheStrategy implements IOkCacheStrategy {
     /**
      * 请求策略
      *
@@ -18,16 +18,16 @@ public class NetworkCacheStrategy implements IRequestStrategy {
     @Override
     public Response request(Interceptor.Chain chain) throws IOException {
         Response response = null;
-        CacheStrategy cacheStrategy = new CacheStrategy();
-        NetworkStrategy networkStrategy = new NetworkStrategy();
+        OnlyCacheStrategy onlyCacheStrategy = new OnlyCacheStrategy();
+        OnlyNetworkStrategyOk onlyNetworkStrategy = new OnlyNetworkStrategyOk();
         try {
-            response = networkStrategy.request(chain);
+            response = onlyNetworkStrategy.request(chain);
             if(!response.isSuccessful()){
-                return cacheStrategy.request(chain);
+                return onlyCacheStrategy.request(chain);
             }
         } catch (Exception e){
             try {
-                response = cacheStrategy.request(chain);
+                response = onlyCacheStrategy.request(chain);
             } catch (IOException e1) {
                 //忽略不处理
             }

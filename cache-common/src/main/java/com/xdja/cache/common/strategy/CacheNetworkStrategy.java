@@ -8,7 +8,7 @@ import okhttp3.Response;
 /**
  * 读取缓存，如果缓存不存在则读取网络
  */
-public class CacheNetworkStrategy implements IRequestStrategy {
+public class CacheNetworkStrategy implements IOkCacheStrategy {
     /**
      *
      * @param chain
@@ -17,16 +17,16 @@ public class CacheNetworkStrategy implements IRequestStrategy {
     @Override
     public Response request(Interceptor.Chain chain) {
         Response response = null;
-        CacheStrategy cacheStrategy = new CacheStrategy();
-        NetworkStrategy networkStrategy = new NetworkStrategy();
+        OnlyCacheStrategy onlyCacheStrategy = new OnlyCacheStrategy();
+        OnlyNetworkStrategyOk onlyNetworkStrategy = new OnlyNetworkStrategyOk();
         try {
-            response = cacheStrategy.request(chain);
+            response = onlyCacheStrategy.request(chain);
             if (!response.isSuccessful()) {
-                return networkStrategy.request(chain);
+                return onlyNetworkStrategy.request(chain);
             }
         } catch (Exception e) {
             try {
-                response = networkStrategy.request(chain);
+                response = onlyNetworkStrategy.request(chain);
             } catch (IOException e1) {
                 e1.printStackTrace();
             }

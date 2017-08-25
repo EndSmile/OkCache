@@ -11,24 +11,24 @@ import okhttp3.Response;
  */
 public class RequestStrategy {
 
-    private IRequestStrategy mIRequestStrategy;
+    private IOkCacheStrategy mICacheStrategy;
 
     public RequestStrategy(){
 
     }
 
-    public RequestStrategy(IRequestStrategy iRequestStrategy){
-        this.mIRequestStrategy = iRequestStrategy;
+    public RequestStrategy(IOkCacheStrategy iCacheStrategy){
+        this.mICacheStrategy = iCacheStrategy;
     }
 
-    public void setBaseRequestStrategy(IRequestStrategy iRequestStrategy) {
-        mIRequestStrategy = iRequestStrategy;
+    public void setBaseRequestStrategy(IOkCacheStrategy iCacheStrategy) {
+        mICacheStrategy = iCacheStrategy;
     }
 
     public Response request(Interceptor.Chain chain) throws IOException {
         Response response = null;
-        if(mIRequestStrategy !=null){
-            response = mIRequestStrategy.request(chain);
+        if(mICacheStrategy !=null){
+            response = mICacheStrategy.request(chain);
         }
         if(response==null){
             //确认response不能返回NULL 否则会抛出空指针异常,这里做一个处理
