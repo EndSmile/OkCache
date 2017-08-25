@@ -1,6 +1,7 @@
 package com.xdja.cache.common;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Environment;
 
@@ -75,11 +76,23 @@ public class OkCache {
         if (okCacheOperation==null){
             synchronized (OkCache.class){
                 if (okCacheOperation==null){
-                    okCacheOperation = new OkCacheOperation(new File(initParams.cacheDir),initParams.maxCacheSize);
+                    okCacheOperation = new OkCacheOperation(new File(getCacheDirPath()),initParams.maxCacheSize);
                 }
             }
         }
         return okCacheOperation;
+    }
+
+    public static void putCacheTime(String key){
+        assertInitialization();
+        SharedPreferences preferences = context.getSharedPreferences("OkCache", Context.MODE_PRIVATE);
+        preferences.edit().putLong(key,System.currentTimeMillis()).apply();
+    }
+
+    public static long getCacheTime(String key){
+        assertInitialization();
+        SharedPreferences preferences = context.getSharedPreferences("OkCache", Context.MODE_PRIVATE);
+        return preferences.getLong(key,0);
     }
 
     public static void assertInitialization() {

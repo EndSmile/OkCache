@@ -227,7 +227,7 @@ public final class OkCacheOperation implements Closeable, Flushable {
                 }
 
                 if (isPlaintext(buffer)) {
-                    return key(buffer.readString(charset));
+                    return key(request.url()+"_"+buffer.readString(charset));
                 }
                 return null;
             } catch (Exception e) {

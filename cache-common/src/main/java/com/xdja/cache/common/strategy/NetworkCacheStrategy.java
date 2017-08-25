@@ -19,7 +19,7 @@ public class NetworkCacheStrategy implements IOkCacheStrategy {
     public Response request(Interceptor.Chain chain) throws IOException {
         Response response = null;
         OnlyCacheStrategy onlyCacheStrategy = new OnlyCacheStrategy();
-        OnlyNetworkStrategyOk onlyNetworkStrategy = new OnlyNetworkStrategyOk();
+        OnlyNetworkStrategy onlyNetworkStrategy = new OnlyNetworkStrategy();
         try {
             response = onlyNetworkStrategy.request(chain);
             if(!response.isSuccessful()){

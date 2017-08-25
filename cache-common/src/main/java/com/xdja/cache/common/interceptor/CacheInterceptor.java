@@ -5,7 +5,7 @@ import android.util.Log;
 import com.xdja.cache.common.strategy.CacheNetworkStrategy;
 import com.xdja.cache.common.strategy.OnlyCacheStrategy;
 import com.xdja.cache.common.strategy.NetworkCacheStrategy;
-import com.xdja.cache.common.strategy.OnlyNetworkStrategyOk;
+import com.xdja.cache.common.strategy.OnlyNetworkStrategy;
 import com.xdja.cache.common.strategy.RequestStrategy;
 import com.xdja.cache.common.utils.Common;
 
@@ -33,7 +33,7 @@ public class CacheInterceptor implements Interceptor {
                     requestStrategy.setBaseRequestStrategy(new OnlyCacheStrategy());
                     break;
                 case CacheType.ONLY_NETWORK:
-                    requestStrategy.setBaseRequestStrategy(new OnlyNetworkStrategyOk());
+                    requestStrategy.setBaseRequestStrategy(new OnlyNetworkStrategy());
                     break;
                 case CacheType.CACHE_ELSE_NETWORK:
                     requestStrategy.setBaseRequestStrategy(new CacheNetworkStrategy());
