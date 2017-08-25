@@ -8,8 +8,8 @@ import android.support.annotation.NonNull;
 import android.text.TextUtils;
 import android.util.Log;
 
-import com.xdja.cache.common.interceptor.CacheType;
-import com.xdja.cache.common.utils.Common;
+import com.xdja.cache.common.interceptor.CacheStrategy;
+import com.xdja.cache.common.utils.OkCacheParamsKey;
 import com.xdja.cache.common.utils.CommonUtil;
 import com.xdja.cache.common.utils.SdUtils;
 import com.xdja.cache.okhttp.exception.NetworkException;
@@ -195,7 +195,7 @@ public class OkHttpCacheUtils {
         int currentCacheType;
         //网络无效的话指定读取缓存策略
         if (!CommonUtil.isNetworkConnected(mContext)) {
-            currentCacheType = CacheType.ONLY_CACHE;
+            currentCacheType = CacheStrategy.ONLY_CACHE;
         } else {
             currentCacheType = cacheType;
         }
@@ -214,7 +214,7 @@ public class OkHttpCacheUtils {
         if (headers != null && !headers.isEmpty()) {
             builder.headers(getRequestHeaders(headers));
         }
-        return builder.url(url).addHeader(Common.REQUEST_CACHE_TYPE_HEAD, String.valueOf(currentCacheType)).build();
+        return builder.url(url).addHeader(OkCacheParamsKey.CACHE_STRATEGY_HEADER, String.valueOf(currentCacheType)).build();
     }
 
     private void startRequest(Call call, final IAsyncCallBack IAsyncCallBack) {

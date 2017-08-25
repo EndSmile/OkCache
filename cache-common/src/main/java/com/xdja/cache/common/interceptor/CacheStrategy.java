@@ -3,7 +3,7 @@ package com.xdja.cache.common.interceptor;
 /**
  * 缓存的几种模式
  */
-public class CacheType {
+public class CacheStrategy {
     /**
      * 无效缓存
      */
@@ -24,4 +24,11 @@ public class CacheType {
      * 先读取网络，如果网络请求失败则读取缓存
      */
     public static final int NETWORK_ELSE_CACHE = 3;
+
+    /**
+     * 无缓存或缓存到期时使用网络，否则使用缓存
+     */
+    public static final int BY_STALE = 4;
+
+
 }

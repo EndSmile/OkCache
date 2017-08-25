@@ -38,9 +38,7 @@ import okhttp3.internal.Util;
 import okhttp3.internal.cache.CacheRequest;
 import okhttp3.internal.cache.CacheStrategy;
 import okhttp3.internal.cache.DiskLruCache;
-import okhttp3.internal.cache.InternalCache;
 import okhttp3.internal.http.HttpHeaders;
-import okhttp3.internal.http.HttpMethod;
 import okhttp3.internal.http.StatusLine;
 import okhttp3.internal.io.FileSystem;
 import okhttp3.internal.platform.Platform;
@@ -169,14 +167,14 @@ public final class OkCacheOperation implements Closeable, Flushable {
         return key(url.toString());
     }
 
-    public static String key(String string){
+    public static String key(String string) {
         return ByteString.encodeUtf8(string).md5().hex();
     }
 
     @Nullable
     public Response get(Request request) {
         String key = getKey(request);
-        if (key==null){
+        if (key == null) {
             return null;
         }
 
@@ -210,24 +208,17 @@ public final class OkCacheOperation implements Closeable, Flushable {
     }
 
     @Nullable
-    private String getKey(Request request) {
+    public static String getKey(Request request) {
         if (request.method().equals("POST")) {
             try {
                 RequestBody requestBody = request.body();
                 if (requestBody == null) {
                     return null;
                 }
-                Buffer buffer = new Buffer();
-                requestBody.writeTo(buffer);
 
-                Charset charset = UTF8;
-                MediaType contentType = requestBody.contentType();
-                if (contentType != null) {
-                    charset = contentType.charset(UTF8);
-                }
-
-                if (isPlaintext(buffer)) {
-                    return key(request.url()+"_"+buffer.readString(charset));
+                String requestBodyStr = getRequestBodyStr(requestBody);
+                if (requestBodyStr != null) {
+                    return key(request.url() + "_" + requestBodyStr);
                 }
                 return null;
             } catch (Exception e) {
@@ -240,18 +231,44 @@ public final class OkCacheOperation implements Closeable, Flushable {
     }
 
     @Nullable
+    public static String getRequestBodyStr(RequestBody requestBody) {
+        if (requestBody == null) {
+            return null;
+        }
+
+        try {
+            Buffer buffer = new Buffer();
+            requestBody.writeTo(buffer);
+
+            Charset charset = UTF8;
+            MediaType contentType = requestBody.contentType();
+            if (contentType != null) {
+                charset = contentType.charset(UTF8);
+            }
+
+            if (isPlaintext(buffer)) {
+                return buffer.readString(charset);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+        return null;
+    }
+
+    @Nullable
     public CacheRequest put(Response response) {
         String requestMethod = response.request().method();
 
-        if (HttpMethod.invalidatesCache(response.request().method())) {
-            try {
-                remove(response.request());
-            } catch (IOException ignored) {
-                // The cache cannot be written.
-            }
-            return null;
-        }
-        if (!requestMethod.equals("GET")||!requestMethod.equals("POST")) {
+//        if (HttpMethod.invalidatesCache(response.request().method())) {
+//            try {
+//                remove(response.request());
+//            } catch (IOException ignored) {
+//                // The cache cannot be written.
+//            }
+//            return null;
+//        }
+        if (!(requestMethod.equals("GET") || requestMethod.equals("POST"))) {
             //支持get和post请求
             return null;
         }
@@ -264,7 +281,7 @@ public final class OkCacheOperation implements Closeable, Flushable {
         DiskLruCache.Editor editor = null;
         try {
             String key = getKey(response.request());
-            if (key==null){
+            if (key == null) {
                 return null;
             }
             editor = cache.edit(key);
@@ -281,7 +298,7 @@ public final class OkCacheOperation implements Closeable, Flushable {
 
     void remove(Request request) throws IOException {
         String key = getKey(request);
-        if (key!=null){
+        if (key != null) {
             cache.remove(key);
         }
     }
@@ -530,6 +547,8 @@ public final class OkCacheOperation implements Closeable, Flushable {
         Handshake handshake;
         private final long sentRequestMillis;
         private final long receivedResponseMillis;
+        private final String requestBody;
+        private MediaType requestMediaType;
 
         /**
          * Reads an entry from an input stream. A typical entry looks like this:
@@ -584,6 +603,13 @@ public final class OkCacheOperation implements Closeable, Flushable {
                 BufferedSource source = Okio.buffer(in);
                 url = source.readUtf8LineStrict();
                 requestMethod = source.readUtf8LineStrict();
+                //// TODO: 2017/8/25 待验证
+                String mediaTypeStr = source.readUtf8LineStrict();
+                if (mediaTypeStr != null && !mediaTypeStr.isEmpty()) {
+                    requestMediaType = MediaType.parse(mediaTypeStr);
+                }
+                requestBody = source.readUtf8LineStrict();
+
                 Headers.Builder varyHeadersBuilder = new Headers.Builder();
                 int varyRequestHeaderLineCount = readInt(source);
                 for (int i = 0; i < varyRequestHeaderLineCount; i++) {
@@ -637,6 +663,11 @@ public final class OkCacheOperation implements Closeable, Flushable {
             this.url = response.request().url().toString();
             this.varyHeaders = HttpHeaders.varyHeaders(response);
             this.requestMethod = response.request().method();
+            RequestBody requestBody = response.request().body();
+            this.requestBody = getRequestBodyStr(requestBody);
+            if (requestBody != null) {
+                this.requestMediaType = requestBody.contentType();
+            }
             this.protocol = response.protocol();
             this.code = response.code();
             this.message = response.message();
@@ -653,6 +684,16 @@ public final class OkCacheOperation implements Closeable, Flushable {
                     .writeByte('\n');
             sink.writeUtf8(requestMethod)
                     .writeByte('\n');
+            //// TODO: 2017/8/25 添加验证
+            if (requestMediaType != null) {
+                sink.writeUtf8(requestMediaType.toString());
+            }
+            sink.writeByte('\n');
+            if (requestBody != null) {
+                sink.writeUtf8(requestBody);
+            }
+            sink.writeByte('\n');
+
             sink.writeDecimalLong(varyHeaders.size())
                     .writeByte('\n');
             for (int i = 0, size = varyHeaders.size(); i < size; i++) {
@@ -741,11 +782,16 @@ public final class OkCacheOperation implements Closeable, Flushable {
         public Response response(DiskLruCache.Snapshot snapshot) {
             String contentType = responseHeaders.get("Content-Type");
             String contentLength = responseHeaders.get("Content-Length");
-            Request cacheRequest = new Request.Builder()
+            Request.Builder builder = new Request.Builder()
                     .url(url)
-                    .method(requestMethod, null)
-                    .headers(varyHeaders)
-                    .build();
+                    .headers(varyHeaders);
+            //// TODO: 2017/8/25 修改验证
+            if (requestMethod.equals("POST")) {
+                builder.method(requestMethod, RequestBody.create(requestMediaType, requestBody));
+            } else {
+                builder.method(requestMethod, null);
+            }
+            Request cacheRequest = builder.build();
             return new Response.Builder()
                     .request(cacheRequest)
                     .protocol(protocol)

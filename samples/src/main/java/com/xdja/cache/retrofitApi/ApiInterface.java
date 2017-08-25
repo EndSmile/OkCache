@@ -1,7 +1,7 @@
 package com.xdja.cache.retrofitApi;
 
 import com.xdja.cache.bean.Contributor;
-import com.xdja.cache.common.utils.Common;
+import com.xdja.cache.common.utils.OkCacheParamsKey;
 
 import java.util.List;
 
@@ -17,6 +17,6 @@ public interface ApiInterface {
     Call<List<Contributor>> contributors(@Path("owner") String owner
             , @Path("repo") String repo
             , @Query("cacheTime") int cacheTime
-            , @Header(Common.REQUEST_CACHE_TYPE_HEAD) int requestCacheType);
+            , @Header(OkCacheParamsKey.CACHE_STRATEGY_HEADER) int requestCacheType);
 
 }

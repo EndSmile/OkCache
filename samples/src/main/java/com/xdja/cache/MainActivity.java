@@ -15,7 +15,7 @@ import android.widget.TextView;
 import com.google.gson.Gson;
 import com.xdja.cache.bean.Contributor;
 import com.xdja.cache.bean.ResponseBodys;
-import com.xdja.cache.common.interceptor.CacheType;
+import com.xdja.cache.common.interceptor.CacheStrategy;
 import com.xdja.cache.okhttp.request.IAsyncCallBack;
 import com.xdja.cache.okhttp.request.NameValuePair;
 import com.xdja.cache.okhttp.request.OkHttpCacheUtils;
@@ -35,7 +35,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private TextView textView;
     private Button okhttp, okhttpAsync, retrofit;
     private static String[] responseBody = {""};
-    private int mCurrentCacheType = CacheType.NETWORK_ELSE_CACHE;
+    private int mCurrentCacheType = CacheStrategy.NETWORK_ELSE_CACHE;
     private final MyHandler mHandler = new MyHandler(this);
 
     @Override
@@ -62,16 +62,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.only_cache:
-                mCurrentCacheType = CacheType.ONLY_CACHE;
+                mCurrentCacheType = CacheStrategy.ONLY_CACHE;
                 break;
             case R.id.only_network:
-                mCurrentCacheType = CacheType.ONLY_NETWORK;
+                mCurrentCacheType = CacheStrategy.ONLY_NETWORK;
                 break;
             case R.id.network_cache:
-                mCurrentCacheType = CacheType.NETWORK_ELSE_CACHE;
+                mCurrentCacheType = CacheStrategy.NETWORK_ELSE_CACHE;
                 break;
             case R.id.cache_network:
-                mCurrentCacheType = CacheType.CACHE_ELSE_NETWORK;
+                mCurrentCacheType = CacheStrategy.CACHE_ELSE_NETWORK;
                 break;
             case R.id.clean_data:
                 textView.setText("");

@@ -1,6 +1,6 @@
 package com.xdja.cache.common.strategy;
 
-import com.xdja.cache.common.utils.Common;
+import com.xdja.cache.common.utils.OkCacheParamsKey;
 
 import java.io.IOException;
 
@@ -40,7 +40,7 @@ public class CacheStrategy implements IRequestStrategy {
         Request request = chain.request();
         request = request.newBuilder()
                 .cacheControl(CacheControl.FORCE_CACHE)
-                .removeHeader(Common.REQUEST_CACHE_TYPE_HEAD)//移除添加的自定义header
+                .removeHeader(OkCacheParamsKey.CACHE_STRATEGY_HEADER)//移除添加的自定义header
                 .build();//没有网络，直接读取缓存
         Response response = chain.proceed(request);
         response = response.newBuilder()// only-if-cached完全使用缓存，如果命中失败，则返回503错误

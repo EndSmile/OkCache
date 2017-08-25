@@ -4,7 +4,7 @@ package com.xdja.cache.retrofit.generator;
 import android.content.Context;
 
 import com.xdja.cache.common.interceptor.CacheInterceptor;
-import com.xdja.cache.common.utils.Common;
+import com.xdja.cache.common.utils.OkCacheParamsKey;
 import com.xdja.cache.common.utils.SdUtils;
 
 import java.io.File;
@@ -43,7 +43,7 @@ public class RetrofitCacheGenerator {
 
     private void initRetrofit() {
         builder = new Retrofit.Builder()
-                .baseUrl(Common.HOST)
+                .baseUrl(OkCacheParamsKey.HOST)
                 .client(client)
                 .addConverterFactory(GsonConverterFactory.create())
                 .addCallAdapterFactory(RxJava2CallAdapterFactory.create());

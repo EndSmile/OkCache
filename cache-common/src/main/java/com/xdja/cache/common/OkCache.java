@@ -5,9 +5,13 @@ import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Environment;
 
+import com.xdja.cache.common.utils.OkCacheParamsKey;
+
 import java.io.File;
 
+import okhttp3.HttpUrl;
 import okhttp3.OkCacheOperation;
+import okhttp3.Request;
 
 /**
  * Created by ldy on 2017/8/24.
@@ -15,6 +19,7 @@ import okhttp3.OkCacheOperation;
 
 public class OkCache {
     private static final long DEFAULT_CACHE_SIZE = 1024 * 1024 * 50;
+    private static final long DEFAULT_MAX_STALE = 60 * 60 * 24 * 30;//过期时间为30天
     private static Context context;
     private static InitParams initParams;
     private static String cacheDirPath;
@@ -71,31 +76,70 @@ public class OkCache {
     }
 
 
-    public static OkCacheOperation getCacheOperation(){
+    public static OkCacheOperation getCacheOperation() {
         assertInitialization();
-        if (okCacheOperation==null){
-            synchronized (OkCache.class){
-                if (okCacheOperation==null){
-                    okCacheOperation = new OkCacheOperation(new File(getCacheDirPath()),initParams.maxCacheSize);
+        if (okCacheOperation == null) {
+            synchronized (OkCache.class) {
+                if (okCacheOperation == null) {
+                    okCacheOperation = new OkCacheOperation(new File(getCacheDirPath()), initParams.maxCacheSize);
                 }
             }
         }
         return okCacheOperation;
     }
 
-    public static void putCacheTime(String key){
+    public static long getMaxStale() {
         assertInitialization();
-        SharedPreferences preferences = context.getSharedPreferences("OkCache", Context.MODE_PRIVATE);
-        preferences.edit().putLong(key,System.currentTimeMillis()).apply();
+        if (initParams.maxStale <= 0) {
+            return DEFAULT_MAX_STALE;
+        } else {
+            return initParams.maxStale;
+        }
     }
 
-    public static long getCacheTime(String key){
+    public static void putCacheTime(String key) {
         assertInitialization();
         SharedPreferences preferences = context.getSharedPreferences("OkCache", Context.MODE_PRIVATE);
-        return preferences.getLong(key,0);
+        preferences.edit().putLong(key, System.currentTimeMillis()).apply();
     }
 
-    public static void assertInitialization() {
+    public static long getCacheTime(String key) {
+        assertInitialization();
+        SharedPreferences preferences = context.getSharedPreferences("OkCache", Context.MODE_PRIVATE);
+        return preferences.getLong(key, 0);
+    }
+
+    public static Request stripSelfParams(Request request) {
+        HttpUrl realUrl = request.url().newBuilder()
+                .removeAllQueryParameters(OkCacheParamsKey.ENABLE_CACHE_URL)
+                .removeAllQueryParameters(OkCacheParamsKey.MAX_STALE_URL)
+                .build();
+        request = request.newBuilder()
+                .removeHeader(OkCacheParamsKey.CACHE_STRATEGY_HEADER)
+                .url(realUrl)
+                .build();
+        return request;
+    }
+
+    public static boolean isEnableCache(Request request) {
+        assertInitialization();
+        String enableCacheStr = request.header(OkCacheParamsKey.ENABLE_CACHE_URL);
+        if ("true".equals(enableCacheStr)) {
+            return true;
+        }
+        if ("false".equals(enableCacheStr)) {
+            return false;
+        }
+        if (request.method().equals("GET")) {
+            return initParams.enableGetCache;
+        } else if (request.method().equals("POST")) {
+            return initParams.enablePostCache;
+        } else {
+            return false;
+        }
+    }
+
+    private static void assertInitialization() {
         if (initParams == null) {
             throw new IllegalStateException("Do you forget to initialize OkCache?");
         }
@@ -104,6 +148,7 @@ public class OkCache {
     public static class InitParams {
         private String cacheDir;
         private long maxCacheSize;
+        private long maxStale;
         private boolean enableGetCache;
         private boolean enablePostCache;
 

@@ -5,10 +5,9 @@ import android.util.Log;
 
 import com.xdja.cache.common.strategy.CacheNetworkStrategy;
 import com.xdja.cache.common.strategy.NetworkCacheStrategy;
-import com.xdja.cache.common.strategy.OnlyCacheStrategy;
-import com.xdja.cache.common.strategy.OnlyNetworkStrategy;
+import com.xdja.cache.common.strategy.custom.OnlyNetworkStrategy;
 import com.xdja.cache.common.strategy.RequestStrategy;
-import com.xdja.cache.common.utils.Common;
+import com.xdja.cache.common.utils.OkCacheParamsKey;
 
 import java.io.IOException;
 
@@ -27,26 +26,26 @@ public class CacheInterceptor implements Interceptor {
     public Response intercept(Chain chain) throws IOException {
         RequestStrategy requestStrategy = new RequestStrategy();
         Request request = chain.request();
-        String cacheTypeHeader = request.headers().get(Common.REQUEST_CACHE_TYPE_HEAD);
+        String cacheTypeHeader = request.headers().get(OkCacheParamsKey.CACHE_STRATEGY_HEADER);
         String query = request.url().url().getQuery();
         int cacheTime = getCacheTime(query);
         if (cacheTypeHeader != null) {
             int cacheType = Integer.parseInt(cacheTypeHeader);
             Log.i("111", "请求tag:" + cacheType + " 请求url:" + request.url().toString());
             switch (cacheType) {
-                case CacheType.ONLY_CACHE:
-                    requestStrategy.setBaseRequestStrategy(new OnlyCacheStrategy(cacheTime));
+                case CacheStrategy.ONLY_CACHE:
+                    requestStrategy.setBaseRequestStrategy(new com.xdja.cache.common.strategy.CacheStrategy(cacheTime));
                     break;
-                case CacheType.ONLY_NETWORK:
+                case CacheStrategy.ONLY_NETWORK:
                     requestStrategy.setBaseRequestStrategy(new OnlyNetworkStrategy());
                     break;
-                case CacheType.CACHE_ELSE_NETWORK:
+                case CacheStrategy.CACHE_ELSE_NETWORK:
                     requestStrategy.setBaseRequestStrategy(new CacheNetworkStrategy(cacheTime));
                     break;
-                case CacheType.NETWORK_ELSE_CACHE:
+                case CacheStrategy.NETWORK_ELSE_CACHE:
                     requestStrategy.setBaseRequestStrategy(new NetworkCacheStrategy(cacheTime));
                     break;
-                case CacheType.INVALID_TYPE:
+                case CacheStrategy.INVALID_TYPE:
                     break;
                 default:
                     break;

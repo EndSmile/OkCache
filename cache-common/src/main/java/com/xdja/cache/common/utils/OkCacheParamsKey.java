@@ -10,9 +10,12 @@ package com.xdja.cache.common.utils;
  */
 
 
-public class Common {
+public class OkCacheParamsKey {
 
-    public static final String REQUEST_CACHE_TYPE_HEAD = "requestCacheType";//请求缓存类型
+    public static final String CACHE_STRATEGY_HEADER = "requestCacheType";//请求缓存类型
+    public static final String MAX_STALE_URL = "okcache_maxStale";
+    public static final String ENABLE_CACHE_URL = "okcache_enableCache";
+
 
     public static final String HOST = "https://api.github.com";
 
