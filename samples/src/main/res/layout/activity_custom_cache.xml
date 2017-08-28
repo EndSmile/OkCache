@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:padding="16dp"
-    tools:context="com.xdja.cache.CustomCacheActivity">
+    tools:context="com.xdja.okcache.CustomCacheActivity">
 
     <EditText
         android:id="@+id/edit_input"

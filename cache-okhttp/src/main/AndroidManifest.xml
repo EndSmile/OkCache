@@ -1,6 +1,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
 
-    package="com.xdja.cache.okhttp">
+    package="com.xdja.okcache.okhttp">
 
     <application
         android:allowBackup="true"
