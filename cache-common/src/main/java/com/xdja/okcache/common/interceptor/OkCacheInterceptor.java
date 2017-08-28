@@ -3,12 +3,12 @@ package com.xdja.okcache.common.interceptor;
 
 import com.xdja.okcache.common.OkCache;
 import com.xdja.okcache.common.constant.CacheStrategy;
-import com.xdja.okcache.common.strategy.custom.ByStaleStrategy;
-import com.xdja.okcache.common.strategy.custom.CacheElseNetworkStrategy;
-import com.xdja.okcache.common.strategy.custom.NetworkElseCacheStrategy;
-import com.xdja.okcache.common.strategy.custom.OnlyCacheStrategy;
-import com.xdja.okcache.common.strategy.custom.OnlyNetworkStrategy;
-import com.xdja.okcache.common.utils.OkCacheParamsKey;
+import com.xdja.okcache.common.constant.HeaderParams;
+import com.xdja.okcache.common.strategy.ByStaleStrategy;
+import com.xdja.okcache.common.strategy.CacheElseNetworkStrategy;
+import com.xdja.okcache.common.strategy.NetworkElseCacheStrategy;
+import com.xdja.okcache.common.strategy.OnlyCacheStrategy;
+import com.xdja.okcache.common.strategy.OnlyNetworkStrategy;
 
 import java.io.IOException;
 
@@ -18,9 +18,11 @@ import okhttp3.Response;
 
 /**
  * Created by ldy on 2017/8/21.
+ *
+ * cache实现的拦截器
  */
 
-public class CustomCacheInterceptor implements Interceptor {
+public class OkCacheInterceptor implements Interceptor {
     @Override
     public Response intercept(Chain chain) throws IOException {
         Request request = chain.request();
@@ -29,7 +31,7 @@ public class CustomCacheInterceptor implements Interceptor {
             return chain.proceed(OkCache.stripSelfParams(request));
         }
 
-        String cacheTypeStr = request.header(OkCacheParamsKey.CACHE_STRATEGY_HEADER);
+        String cacheTypeStr = request.header(HeaderParams.CACHE_STRATEGY);
 
         int cacheType = CacheStrategy.CACHE_ELSE_NETWORK;
         if (cacheTypeStr != null) {

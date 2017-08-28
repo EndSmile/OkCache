@@ -5,11 +5,11 @@ import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Environment;
 
-import com.xdja.okcache.common.utils.OkCacheParamsKey;
+import com.xdja.okcache.common.constant.HeaderParams;
+import com.xdja.okcache.common.constant.QueryParams;
 
 import java.io.File;
 
-import okhttp3.HttpUrl;
 import okhttp3.OkCacheOperation;
 import okhttp3.Request;
 
@@ -110,20 +110,14 @@ public class OkCache {
     }
 
     public static Request stripSelfParams(Request request) {
-        HttpUrl realUrl = request.url().newBuilder()
-                .removeAllQueryParameters(OkCacheParamsKey.ENABLE_CACHE_URL)
-                .removeAllQueryParameters(OkCacheParamsKey.MAX_STALE_URL)
-                .build();
-        request = request.newBuilder()
-                .removeHeader(OkCacheParamsKey.CACHE_STRATEGY_HEADER)
-                .url(realUrl)
-                .build();
-        return request;
+        Request.Builder builder = request.newBuilder();
+        builder.url(QueryParams.stripUrlQuery(request.url()));
+        return HeaderParams.stripHeader(builder).build();
     }
 
     public static boolean isEnableCache(Request request) {
         assertInitialization();
-        String enableCacheStr = request.header(OkCacheParamsKey.ENABLE_CACHE_URL);
+        String enableCacheStr = request.header(QueryParams.ENABLE_CACHE);
         if ("true".equals(enableCacheStr)) {
             return true;
         }
@@ -173,9 +167,4 @@ public class OkCache {
         }
     }
 
-
-    public static class HeaderKey{
-        public static final String CACHE_STRATEGY = "requestCacheType";//请求缓存类型
-
-    }
 }

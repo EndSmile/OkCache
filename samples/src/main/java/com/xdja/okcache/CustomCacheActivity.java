@@ -10,8 +10,8 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.xdja.okcache.common.OkCache;
-import com.xdja.okcache.common.strategy.custom.OnlyCacheStrategy;
-import com.xdja.okcache.common.strategy.custom.OnlyNetworkStrategy;
+import com.xdja.okcache.common.strategy.OnlyCacheStrategy;
+import com.xdja.okcache.common.strategy.OnlyNetworkStrategy;
 
 import java.io.IOException;
 

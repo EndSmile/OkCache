@@ -9,7 +9,7 @@ import android.text.TextUtils;
 import android.util.Log;
 
 import com.xdja.okcache.common.constant.CacheStrategy;
-import com.xdja.okcache.common.utils.OkCacheParamsKey;
+import com.xdja.okcache.common.constant.HeaderParams;
 import com.xdja.okcache.okhttp.util.CacheOkHttpUtil;
 import com.xdja.okcache.okhttp.util.SdUtils;
 import com.xdja.okcache.okhttp.exception.NetworkException;
@@ -82,7 +82,8 @@ public class OkHttpCacheUtils {
         HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor(HttpLoggingInterceptor.Logger.DEFAULT);
         loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
         builder.cache(cache)
-                .addInterceptor(new com.xdja.okcache.common.interceptor.CacheInterceptor())
+                //// TODO: 2017/8/28 待修复
+//                .addInterceptor(new CacheInterceptor())
                 .addInterceptor(loggingInterceptor);
         //设置超时
         builder.connectTimeout(15, TimeUnit.SECONDS);
@@ -214,7 +215,9 @@ public class OkHttpCacheUtils {
         if (headers != null && !headers.isEmpty()) {
             builder.headers(getRequestHeaders(headers));
         }
-        return builder.url(url).addHeader(OkCacheParamsKey.CACHE_STRATEGY_HEADER, String.valueOf(currentCacheType)).build();
+
+        return builder.url(url).
+                addHeader(HeaderParams.CACHE_STRATEGY, String.valueOf(currentCacheType)).build();
     }
 
     private void startRequest(Call call, final IAsyncCallBack IAsyncCallBack) {

@@ -1,6 +1,4 @@
-package com.xdja.okcache.common.strategy.custom;
-
-import com.xdja.okcache.common.strategy.IRequestStrategy;
+package com.xdja.okcache.common.strategy;
 
 import java.io.IOException;
 

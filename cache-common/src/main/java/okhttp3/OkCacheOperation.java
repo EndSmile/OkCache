@@ -192,7 +192,7 @@ public final class OkCacheOperation implements Closeable, Flushable {
 
         try {
             entry = new Entry(snapshot.getSource(ENTRY_METADATA));
-            System.out.println("get:"+entry.toString());
+//            System.out.println("get:"+entry.toString());
         } catch (IOException e) {
             Util.closeQuietly(snapshot);
             return null;
@@ -284,7 +284,7 @@ public final class OkCacheOperation implements Closeable, Flushable {
         }
 
         Entry entry = new Entry(response);
-        System.out.println("put:"+entry);
+//        System.out.println("put:"+entry);
         DiskLruCache.Editor editor = null;
         try {
             String key = getKey(response.request());

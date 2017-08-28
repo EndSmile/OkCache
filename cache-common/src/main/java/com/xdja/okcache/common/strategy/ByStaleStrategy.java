@@ -1,8 +1,7 @@
-package com.xdja.okcache.common.strategy.custom;
+package com.xdja.okcache.common.strategy;
 
 import com.xdja.okcache.common.OkCache;
-import com.xdja.okcache.common.strategy.IRequestStrategy;
-import com.xdja.okcache.common.utils.OkCacheParamsKey;
+import com.xdja.okcache.common.constant.QueryParams;
 
 import java.io.IOException;
 
@@ -14,7 +13,7 @@ import okhttp3.Response;
 /**
  * Created by ldy on 2017/8/25.
  *
- * 如果有缓存且缓存未过期则使用缓存
+ * 如果有缓存且缓存未过期则使用缓存，否则使用网络
  */
 
 public class ByStaleStrategy implements IRequestStrategy {
@@ -22,7 +21,7 @@ public class ByStaleStrategy implements IRequestStrategy {
     public Response request(Interceptor.Chain chain) throws IOException {
 
         Request request = chain.request();
-        String maxStaleStr = request.url().queryParameter(OkCacheParamsKey.MAX_STALE_URL);
+        String maxStaleStr = request.url().queryParameter(QueryParams.MAX_STALE);
 
         //获取最大过期时间
         long maxStale;

@@ -1,4 +1,4 @@
-package com.xdja.okcache.common.strategy.custom;
+package com.xdja.okcache.common.strategy;
 
 import com.xdja.okcache.common.OkCache;
 import com.xdja.okcache.common.strategy.IRequestStrategy;

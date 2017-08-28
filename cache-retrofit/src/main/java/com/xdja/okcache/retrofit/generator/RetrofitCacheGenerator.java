@@ -3,9 +3,7 @@ package com.xdja.okcache.retrofit.generator;
 
 import android.content.Context;
 
-import com.xdja.okcache.common.interceptor.CacheInterceptor;
-import com.xdja.okcache.common.utils.OkCacheParamsKey;
-import com.xdja.okcache.common.utils.SdUtils;
+import com.xdja.okcache.retrofit.util.SdUtils;
 
 import java.io.File;
 import java.util.concurrent.TimeUnit;
@@ -32,6 +30,8 @@ public class RetrofitCacheGenerator {
     private static OkHttpClient client = null;
     private static Context mContext;
 
+    public static final String HOST = "https://api.github.com";
+
     public RetrofitCacheGenerator() {
         initOkHttp();
         initRetrofit();
@@ -43,7 +43,7 @@ public class RetrofitCacheGenerator {
 
     private void initRetrofit() {
         builder = new Retrofit.Builder()
-                .baseUrl(OkCacheParamsKey.HOST)
+                .baseUrl(HOST)
                 .client(client)
                 .addConverterFactory(GsonConverterFactory.create())
                 .addCallAdapterFactory(RxJava2CallAdapterFactory.create());
@@ -62,8 +62,9 @@ public class RetrofitCacheGenerator {
         HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor();
         loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
         builder.cache(cache)
-                .addInterceptor(loggingInterceptor)
-                .addInterceptor(new CacheInterceptor());
+                .addInterceptor(loggingInterceptor);
+        //// TODO: 2017/8/28 待修复
+//                .addInterceptor(new CacheInterceptor());
         builder.connectTimeout(15, TimeUnit.SECONDS)   //设置超时
                 .readTimeout(20, TimeUnit.SECONDS)
                 .writeTimeout(20, TimeUnit.SECONDS)

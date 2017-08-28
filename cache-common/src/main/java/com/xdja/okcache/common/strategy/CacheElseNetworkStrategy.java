@@ -1,6 +1,4 @@
-package com.xdja.okcache.common.strategy.custom;
-
-import com.xdja.okcache.common.strategy.IRequestStrategy;
+package com.xdja.okcache.common.strategy;
 
 import java.io.IOException;
 
@@ -24,7 +22,7 @@ public class CacheElseNetworkStrategy implements IRequestStrategy {
         if (cacheResponse.isSuccessful()){
             return cacheResponse;
         }else {
-            return chain.proceed(chain.request());
+            return new OnlyNetworkStrategy().request(chain);
         }
     }
 }

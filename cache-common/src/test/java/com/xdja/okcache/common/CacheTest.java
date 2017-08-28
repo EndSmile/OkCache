@@ -2,8 +2,8 @@ package com.xdja.okcache.common;
 
 import android.support.annotation.Nullable;
 
-import com.xdja.okcache.common.strategy.custom.OnlyCacheStrategy;
-import com.xdja.okcache.common.strategy.custom.OnlyNetworkStrategy;
+import com.xdja.okcache.common.strategy.OnlyCacheStrategy;
+import com.xdja.okcache.common.strategy.OnlyNetworkStrategy;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -100,7 +100,11 @@ public class CacheTest {
         OnlyNetworkStrategy onlyNetworkStrategy = new OnlyNetworkStrategy();
         Response netResponse = onlyNetworkStrategy.request(chain);
         assertEquals(bodyContent, netResponse.body().string());
-        assertEquals(bodyContent, new OnlyCacheStrategy().request(chain).body().string());
+
+//        requestBody = RequestBody.create(MediaType.parse("text"), "{'method':'testPost2'}");
+//        request = new Request.Builder().url(url).method("POST", requestBody).build();
+        Response cacheRes = new OnlyCacheStrategy().request(chain);
+        assertEquals(bodyContent, cacheRes.body().string());
 
 //        OkCache.getCacheOperation().remove(chain.request());
 //        bodyContent = "{'name':'ldy2'}";
