@@ -43,6 +43,10 @@ public class OnlyNetworkStrategy implements IRequestStrategy {
                     .networkResponse(stripBody(networkResponse))
                     .build();
 
+//            if (cacheResponse!=null){
+//                cacheOperation.remove(request);
+//            }
+
             CacheRequest cacheRequest = cacheOperation.put(response);
             OkCache.putCacheTime(OkCacheOperation.getKey(request));
             return cacheWritingResponse(cacheRequest,response);

@@ -192,6 +192,7 @@ public final class OkCacheOperation implements Closeable, Flushable {
 
         try {
             entry = new Entry(snapshot.getSource(ENTRY_METADATA));
+            System.out.println("get:"+entry.toString());
         } catch (IOException e) {
             Util.closeQuietly(snapshot);
             return null;
@@ -232,6 +233,11 @@ public final class OkCacheOperation implements Closeable, Flushable {
 
     @Nullable
     public static String getRequestBodyStr(RequestBody requestBody) {
+        return getRequestBodyStr(requestBody, true);
+    }
+
+    @Nullable
+    public static String getRequestBodyStr(RequestBody requestBody, boolean isPlainVerify) {
         if (requestBody == null) {
             return null;
         }
@@ -246,7 +252,7 @@ public final class OkCacheOperation implements Closeable, Flushable {
                 charset = contentType.charset(UTF8);
             }
 
-            if (isPlaintext(buffer)) {
+            if (!isPlainVerify || isPlaintext(buffer)) {
                 return buffer.readString(charset);
             }
         } catch (Exception e) {
@@ -278,6 +284,7 @@ public final class OkCacheOperation implements Closeable, Flushable {
         }
 
         Entry entry = new Entry(response);
+        System.out.println("put:"+entry);
         DiskLruCache.Editor editor = null;
         try {
             String key = getKey(response.request());
@@ -296,14 +303,14 @@ public final class OkCacheOperation implements Closeable, Flushable {
         }
     }
 
-    void remove(Request request) throws IOException {
+    public void remove(Request request) throws IOException {
         String key = getKey(request);
         if (key != null) {
             cache.remove(key);
         }
     }
 
-    void update(Response cached, Response network) {
+    public void update(Response cached, Response network) {
         Entry entry = new Entry(network);
         DiskLruCache.Snapshot snapshot = ((CacheResponseBody) cached.body()).snapshot;
         DiskLruCache.Editor editor = null;
@@ -664,7 +671,7 @@ public final class OkCacheOperation implements Closeable, Flushable {
             this.varyHeaders = HttpHeaders.varyHeaders(response);
             this.requestMethod = response.request().method();
             RequestBody requestBody = response.request().body();
-            this.requestBody = getRequestBodyStr(requestBody);
+            this.requestBody = getRequestBodyStr(requestBody, false);
             if (requestBody != null) {
                 this.requestMediaType = requestBody.contentType();
             }
@@ -803,6 +810,24 @@ public final class OkCacheOperation implements Closeable, Flushable {
                     .sentRequestAtMillis(sentRequestMillis)
                     .receivedResponseAtMillis(receivedResponseMillis)
                     .build();
+        }
+
+        @Override
+        public String toString() {
+            return "Entry{" +
+                    "url='" + url + '\'' +
+                    ", varyHeaders=" + varyHeaders +
+                    ", requestMethod='" + requestMethod + '\'' +
+                    ", protocol=" + protocol +
+                    ", code=" + code +
+                    ", message='" + message + '\'' +
+                    ", responseHeaders=" + responseHeaders +
+                    ", handshake=" + handshake +
+                    ", sentRequestMillis=" + sentRequestMillis +
+                    ", receivedResponseMillis=" + receivedResponseMillis +
+                    ", requestBody='" + requestBody + '\'' +
+                    ", requestMediaType=" + requestMediaType +
+                    '}';
         }
     }
 
