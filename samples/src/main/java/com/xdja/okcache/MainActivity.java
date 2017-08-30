@@ -15,7 +15,7 @@ import android.widget.TextView;
 import com.google.gson.Gson;
 import com.xdja.okcache.bean.Contributor;
 import com.xdja.okcache.bean.ResponseBodys;
-import com.xdja.okcache.common.constant.CacheStrategy;
+import com.xdja.okcache.constant.CacheStrategy;
 import com.xdja.okcache.okhttp.request.IAsyncCallBack;
 import com.xdja.okcache.okhttp.request.NameValuePair;
 import com.xdja.okcache.okhttp.request.OkHttpCacheUtils;

@@ -1,7 +1,7 @@
 package com.xdja.okcache.retrofitApi;
 
 import com.xdja.okcache.bean.Contributor;
-import com.xdja.okcache.common.constant.HeaderParams;
+import com.xdja.okcache.constant.HeaderParams;
 
 import java.util.List;
 

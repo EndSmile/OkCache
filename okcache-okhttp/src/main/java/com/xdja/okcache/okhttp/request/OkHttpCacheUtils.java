@@ -8,8 +8,8 @@ import android.support.annotation.NonNull;
 import android.text.TextUtils;
 import android.util.Log;
 
-import com.xdja.okcache.common.constant.CacheStrategy;
-import com.xdja.okcache.common.constant.HeaderParams;
+import com.xdja.okcache.constant.CacheStrategy;
+import com.xdja.okcache.constant.HeaderParams;
 import com.xdja.okcache.okhttp.util.CacheOkHttpUtil;
 import com.xdja.okcache.okhttp.util.SdUtils;
 import com.xdja.okcache.okhttp.exception.NetworkException;

@@ -2,8 +2,9 @@ package com.xdja.okcache.common;
 
 import android.support.annotation.Nullable;
 
-import com.xdja.okcache.common.strategy.OnlyCacheStrategy;
-import com.xdja.okcache.common.strategy.OnlyNetworkStrategy;
+import com.xdja.okcache.OkCache;
+import com.xdja.okcache.strategy.OnlyCacheStrategy;
+import com.xdja.okcache.strategy.OnlyNetworkStrategy;
 
 import org.junit.Before;
 import org.junit.Test;
