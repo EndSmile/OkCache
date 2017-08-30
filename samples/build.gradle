@@ -24,8 +24,8 @@ dependencies {
     androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
-    compile project(':cache-retrofit')
-    compile project(':cache-okhttp')
+    compile project(':okcache-retrofit')
+    compile project(':okcache-okhttp')
 //    compile 'com.xdja.okcache:cache-retrofit:0.1.0'
 //    compile 'com.xdja.okcache:cache-okhttp:0.1.0'
 

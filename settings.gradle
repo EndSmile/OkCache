@@ -1,1 +1,3 @@
-include ':samples', ':cache-common', ':cache-okhttp', ':cache-retrofit'
+include ':samples', ':okcache-common', ':okcache-okhttp', ':okcache-retrofit', ':rxjava'
+
+project(':rxjava').projectDir = new File('okcache-retrofit-adapters/rxjava')
