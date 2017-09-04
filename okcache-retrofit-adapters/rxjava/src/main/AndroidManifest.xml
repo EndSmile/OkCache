@@ -1,6 +1,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
 
-    package="com.xdja.okcache">
+    package="com.xdja.okcache.retrofit.adapter">
 
     <application/>
 
