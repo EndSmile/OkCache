@@ -1,4 +1,4 @@
-package com.xdja.okcache.bean;
+package com.xdja.okcache.sample.bean;
 
 /**
  * <p>Summary:</p>
@@ -33,5 +33,13 @@ public class Contributor {
 
     public void setContributions(int contributions) {
         this.contributions = contributions;
+    }
+
+    @Override
+    public String toString() {
+        return "Contributor{" +
+                "login='" + login + '\'' +
+                ", contributions=" + contributions +
+                '}';
     }
 }

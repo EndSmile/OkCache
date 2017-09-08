@@ -200,10 +200,11 @@ public final class OkCacheOperation implements Closeable, Flushable {
 
         Response response = entry.response(snapshot);
 
-        if (!entry.matches(request, response)) {
-            Util.closeQuietly(response.body());
-            return null;
-        }
+        //// TODO: 2017/9/8 关闭验证
+//        if (!entry.matches(request, response)) {
+//            Util.closeQuietly(response.body());
+//            return null;
+//        }
 
         return response;
     }

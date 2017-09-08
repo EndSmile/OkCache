@@ -33,14 +33,16 @@ public class OnlyNetworkStrategy implements IRequestStrategy {
         Request request = OkCache.stripSelfParams(chain.request());
 
         Response networkResponse = chain.proceed(request);
-        if (networkResponse.isSuccessful()){
+        if (networkResponse.isSuccessful()) {
             OkCacheOperation cacheOperation = OkCache.getCacheOperation();
 
             Response cacheResponse = cacheOperation.get(request);
-            Response response = networkResponse.newBuilder()
-                    .cacheResponse(stripBody(cacheResponse))
-                    .networkResponse(stripBody(networkResponse))
-                    .build();
+            Response.Builder builder = networkResponse.newBuilder()
+                    .cacheResponse(stripBody(cacheResponse));
+            if (networkResponse.networkResponse() == null) {
+                builder.networkResponse(stripBody(networkResponse));
+            }
+            Response response = builder.build();
 
 //            if (cacheResponse!=null){
 //                cacheOperation.remove(request);
@@ -48,7 +50,7 @@ public class OnlyNetworkStrategy implements IRequestStrategy {
 
             CacheRequest cacheRequest = cacheOperation.put(response);
             OkCache.putCacheTime(OkCacheOperation.getKey(request));
-            return cacheWritingResponse(cacheRequest,response);
+            return cacheWritingResponse(cacheRequest, response);
         }
 
         return networkResponse;
@@ -78,7 +80,8 @@ public class OnlyNetworkStrategy implements IRequestStrategy {
         Source cacheWritingSource = new Source() {
             boolean cacheRequestClosed;
 
-            @Override public long read(Buffer sink, long byteCount) throws IOException {
+            @Override
+            public long read(Buffer sink, long byteCount) throws IOException {
                 long bytesRead;
                 try {
                     bytesRead = source.read(sink, byteCount);
@@ -103,11 +106,13 @@ public class OnlyNetworkStrategy implements IRequestStrategy {
                 return bytesRead;
             }
 
-            @Override public Timeout timeout() {
+            @Override
+            public Timeout timeout() {
                 return source.timeout();
             }
 
-            @Override public void close() throws IOException {
+            @Override
+            public void close() throws IOException {
                 if (!cacheRequestClosed
                         && !discard(this, HttpCodec.DISCARD_STREAM_TIMEOUT_MILLIS, MILLISECONDS)) {
                     cacheRequestClosed = true;

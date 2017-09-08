@@ -2,6 +2,7 @@ package com.xdja.okcache.common;
 
 import android.support.annotation.Nullable;
 
+import com.xdja.okcache.BuildConfig;
 import com.xdja.okcache.OkCache;
 import com.xdja.okcache.strategy.OnlyCacheStrategy;
 import com.xdja.okcache.strategy.OnlyNetworkStrategy;

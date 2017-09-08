@@ -15,7 +15,9 @@
  */
 package com.xdja.okcache.retrofit.adapter.rxjava;
 
-import java.util.Arrays;
+import com.xdja.okcache.retrofit.adapter.rxjava.callintercepter.CallInterceptor;
+import com.xdja.okcache.retrofit.adapter.rxjava.callintercepter.CallInterceptorContainer;
+
 import java.util.concurrent.atomic.AtomicInteger;
 import retrofit2.Call;
 import retrofit2.Response;
@@ -29,102 +31,48 @@ import rx.exceptions.OnErrorFailedException;
 import rx.exceptions.OnErrorNotImplementedException;
 import rx.plugins.RxJavaPlugins;
 
-final class CallArbiter<T> extends AtomicInteger implements Subscription, Producer {
-  private static final int STATE_WAITING = 0;
-  private static final int STATE_REQUESTED = 1;
-  private static final int STATE_HAS_RESPONSE = 2;
-  private static final int STATE_TERMINATED = 3;
+public final class CallArbiter<T> implements Subscription {
 
-  private final Call<T>[] call;
+  private final Call<T> call;
+  private CallInterceptorContainer container;
   private final Subscriber<? super Response<T>> subscriber;
 
-  private volatile Response<T> response;
-
-  CallArbiter(Call<T>[] call, Subscriber<? super Response<T>> subscriber) {
-    super(STATE_WAITING);
-
+  CallArbiter(Call<T> call, CallInterceptorContainer container, Subscriber<? super Response<T>> subscriber) {
     this.call = call;
+    this.container = container;
     this.subscriber = subscriber;
   }
 
-  CallArbiter(Call<T> call, Subscriber<? super Response<T>> subscriber) {
-    this(new Call[]{call},subscriber);
-  }
-
   @Override public void unsubscribe() {
-    for (Call<T> tCall : call) {
-      tCall.cancel();
+    CallInterceptor<T> callInterceptor = container.getCallInterceptor();
+    if (callInterceptor!=null){
+      for (Call tCall : callInterceptor.getCallList(call)) {
+        tCall.cancel();
+      }
     }
   }
 
   @Override public boolean isUnsubscribed() {
-    for (Call<T> tCall : call) {
-      if (!tCall.isCanceled()){
-        return false;
+    CallInterceptor<T> callInterceptor = container.getCallInterceptor();
+    if (callInterceptor!=null){
+      for (Call<T> tCall : callInterceptor.getCallList(call)) {
+        if (!tCall.isCanceled()){
+          return false;
+        }
       }
     }
     return true;
   }
 
-  @Override public void request(long amount) {
-    if (amount == 0) {
-      return;
-    }
-    while (true) {
-      int state = get();
-      switch (state) {
-        case STATE_WAITING:
-          if (compareAndSet(STATE_WAITING, STATE_REQUESTED)) {
-            return;
-          }
-          break; // State transition failed. Try again.
-
-        case STATE_HAS_RESPONSE:
-          if (compareAndSet(STATE_HAS_RESPONSE, STATE_TERMINATED)) {
-            deliverResponse(response);
-            return;
-          }
-          break; // State transition failed. Try again.
-
-        case STATE_REQUESTED:
-        case STATE_TERMINATED:
-          return; // Nothing to do.
-
-        default:
-          throw new IllegalStateException("Unknown state: " + state);
-      }
-    }
+  public void emitResponse(Response<T> response,boolean isComplete) {
+    deliverResponse(response, isComplete);
   }
 
-  void emitResponse(Response<T> response) {
-    while (true) {
-      int state = get();
-      switch (state) {
-        case STATE_WAITING:
-          this.response = response;
-          if (compareAndSet(STATE_WAITING, STATE_HAS_RESPONSE)) {
-            return;
-          }
-          break; // State transition failed. Try again.
-
-        case STATE_REQUESTED:
-          if (compareAndSet(STATE_REQUESTED, STATE_TERMINATED)) {
-            deliverResponse(response);
-            return;
-          }
-          break; // State transition failed. Try again.
-
-        case STATE_HAS_RESPONSE:
-        case STATE_TERMINATED:
-          throw new AssertionError();
-
-        default:
-          throw new IllegalStateException("Unknown state: " + state);
-      }
-    }
+  public void emitResponse(Response<T> response) {
+    emitResponse(response,true);
   }
 
-  private void deliverResponse(Response<T> response) {
+  private void deliverResponse(Response<T> response,boolean isComplete) {
     try {
       if (!isUnsubscribed()) {
         subscriber.onNext(response);
@@ -149,6 +97,12 @@ final class CallArbiter<T> extends AtomicInteger implements Subscription, Produc
       }
       return;
     }
+    if (isComplete){
+      emitComplete();
+    }
+  }
+
+  public void emitComplete() {
     try {
       if (!isUnsubscribed()) {
         subscriber.onCompleted();
@@ -163,8 +117,7 @@ final class CallArbiter<T> extends AtomicInteger implements Subscription, Produc
     }
   }
 
-  void emitError(Throwable t) {
-    set(STATE_TERMINATED);
+  public void emitError(Throwable t) {
 
     if (!isUnsubscribed()) {
       try {

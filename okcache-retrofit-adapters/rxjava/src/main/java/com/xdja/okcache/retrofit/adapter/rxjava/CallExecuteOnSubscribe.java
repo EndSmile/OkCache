@@ -15,34 +15,44 @@
  */
 package com.xdja.okcache.retrofit.adapter.rxjava;
 
+import com.xdja.okcache.retrofit.adapter.rxjava.callintercepter.CallInterceptor;
+import com.xdja.okcache.retrofit.adapter.rxjava.callintercepter.CallInterceptorContainer;
+import com.xdja.okcache.retrofit.adapter.rxjava.callintercepter.DefaultCallInterceptor;
+
 import retrofit2.Call;
 import retrofit2.Response;
 import rx.Observable.OnSubscribe;
 import rx.Subscriber;
-import rx.exceptions.Exceptions;
 
 final class CallExecuteOnSubscribe<T> implements OnSubscribe<Response<T>> {
   private final Call<T> originalCall;
+  private CallInterceptorContainer container;
 
-  CallExecuteOnSubscribe(Call<T> originalCall) {
+  CallExecuteOnSubscribe(Call<T> originalCall, CallInterceptorContainer container) {
     this.originalCall = originalCall;
+    this.container = container;
   }
 
   @Override public void call(Subscriber<? super Response<T>> subscriber) {
     // Since Call is a one-shot type, clone it for each new subscriber.
     Call<T> call = originalCall.clone();
-    CallArbiter<T> arbiter = new CallArbiter<>(call, subscriber);
+    CallArbiter<T> arbiter = new CallArbiter<>(call,container, subscriber);
     subscriber.add(arbiter);
-    subscriber.setProducer(arbiter);
+//    subscriber.setProducer(arbiter);
 
-    Response<T> response;
-    try {
-      response = call.execute();
-    } catch (Throwable t) {
-      Exceptions.throwIfFatal(t);
-      arbiter.emitError(t);
-      return;
+    CallInterceptor<T> interceptor = container.getCallInterceptor();
+    if (interceptor==null){
+      interceptor = new DefaultCallInterceptor<T>();
     }
-    arbiter.emitResponse(response);
+    interceptor.execute(arbiter,false);
+//    Response<T> response;
+//    try {
+//      response = call.execute();
+//    } catch (Throwable t) {
+//      Exceptions.throwIfFatal(t);
+//      arbiter.emitError(t);
+//      return;
+//    }
+//    arbiter.emitResponse(response);
   }
 }

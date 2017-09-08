@@ -19,7 +19,10 @@ package com.xdja.okcache.retrofit.adapter.rxjava;
 
 import android.support.annotation.Nullable;
 
+import com.xdja.okcache.retrofit.adapter.rxjava.callintercepter.CallInterceptorContainer;
+
 import java.lang.reflect.Type;
+
 import retrofit2.Call;
 import retrofit2.CallAdapter;
 import retrofit2.Response;
@@ -28,6 +31,7 @@ import rx.Observable.OnSubscribe;
 import rx.Scheduler;
 
 final class RxJavaCallAdapter<R> implements CallAdapter<R, Object> {
+
   private final Type responseType;
   private final @Nullable
   Scheduler scheduler;
@@ -53,9 +57,10 @@ final class RxJavaCallAdapter<R> implements CallAdapter<R, Object> {
   }
 
   @Override public Object adapt(Call<R> call) {
+    CallInterceptorContainer container = new CallInterceptorContainer();
     OnSubscribe<Response<R>> callFunc = isAsync
         ? new CallEnqueueOnSubscribe<>(call)
-        : new CallExecuteOnSubscribe<>(call);
+        : new CallExecuteOnSubscribe<>(call,container);
 
     OnSubscribe<?> func;
     if (isResult) {
@@ -65,7 +70,7 @@ final class RxJavaCallAdapter<R> implements CallAdapter<R, Object> {
     } else {
       func = callFunc;
     }
-    Observable<?> observable = Observable.create(func);
+    Observable<?> observable = OkCacheObservable.create(func,container);
 
     if (scheduler != null) {
       observable = observable.subscribeOn(scheduler);

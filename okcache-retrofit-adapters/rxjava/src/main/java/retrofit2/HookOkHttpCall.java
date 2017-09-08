@@ -4,6 +4,7 @@ import android.support.annotation.Nullable;
 
 import java.io.IOException;
 import java.lang.reflect.Field;
+import java.security.InvalidParameterException;
 
 import okhttp3.Request;
 
@@ -14,19 +15,25 @@ import okhttp3.Request;
  */
 
 public class HookOkHttpCall {
-    private final OkHttpCall okHttpCall;
+    private final Call okHttpCall;
     private final ServiceMethod serviceMethod;
     private final Object[] args;
     private final Class<? extends OkHttpCall> okHttpCallClass;
 
-    public HookOkHttpCall(OkHttpCall okHttpCall) throws Exception {
+    public HookOkHttpCall(Call okHttpCall) throws Exception {
+        if (!(okHttpCall instanceof OkHttpCall)){
+            throw new InvalidParameterException("must instanceof OkhttpCall");
+        }
+
         this.okHttpCall = okHttpCall;
 
-        okHttpCallClass = okHttpCall.getClass();
+        okHttpCallClass = (Class<? extends OkHttpCall>) okHttpCall.getClass();
         Field serviceMethodFiled = okHttpCallClass.getDeclaredField("serviceMethod");
+        serviceMethodFiled.setAccessible(true);
         serviceMethod = (ServiceMethod) serviceMethodFiled.get(okHttpCall);
 
         Field argsFiled = okHttpCallClass.getDeclaredField("args");
+        argsFiled.setAccessible(true);
         args = (Object[]) argsFiled.get(okHttpCall);
     }
 
@@ -58,6 +65,7 @@ public class HookOkHttpCall {
             throw new NullPointerException("Call.Factory returned null.");
         }
         Field rawCallField = okHttpCallClass.getDeclaredField("rawCall");
+        rawCallField.setAccessible(true);
         rawCallField.set(okHttpCall,call);
     }
 }

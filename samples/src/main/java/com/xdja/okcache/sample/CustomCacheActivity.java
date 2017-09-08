@@ -1,4 +1,4 @@
-package com.xdja.okcache;
+package com.xdja.okcache.sample;
 
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
@@ -9,6 +9,7 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import com.xdja.okcache.OkCache;
 import com.xdja.okcache.strategy.OnlyCacheStrategy;
 import com.xdja.okcache.strategy.OnlyNetworkStrategy;
 

@@ -97,15 +97,15 @@ public final class RxJavaCallAdapterFactory extends CallAdapter.Factory {
   @Override
   public CallAdapter<?, ?> get(Type returnType, Annotation[] annotations, Retrofit retrofit) {
     Class<?> rawType = getRawType(returnType);
-    boolean isSingle = rawType == Single.class;
-    boolean isCompletable = rawType == Completable.class;
-    if (rawType != Observable.class && !isSingle && !isCompletable) {
+    boolean isSingle = false;
+    boolean isCompletable = false;
+    if (rawType != OkCacheObservable.class) {
       return null;
     }
 
-    if (isCompletable) {
-      return new RxJavaCallAdapter(Void.class, scheduler, isAsync, false, true, false, true);
-    }
+//    if (isCompletable) {
+//      return new RxJavaCallAdapter(Void.class, scheduler, isAsync, false, true, false, true);
+//    }
 
     boolean isResult = false;
     boolean isBody = false;

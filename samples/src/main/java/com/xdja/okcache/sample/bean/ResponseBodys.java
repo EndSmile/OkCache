@@ -1,4 +1,4 @@
-package com.xdja.okcache.bean;
+package com.xdja.okcache.sample.bean;
 
 import java.util.List;
 

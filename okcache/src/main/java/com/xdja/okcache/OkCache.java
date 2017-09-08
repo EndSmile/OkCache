@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Environment;
+import android.support.annotation.Nullable;
 
 import com.xdja.okcache.constant.HeaderParams;
 import com.xdja.okcache.constant.QueryParams;
@@ -25,7 +26,11 @@ public class OkCache {
     private static String cacheDirPath;
     private static OkCacheOperation okCacheOperation;
 
-    public static void init(Context context, InitParams initParams) {
+    public static void init(Context context) {
+        init(context,null);
+    }
+
+    public static void init(Context context, @Nullable InitParams initParams) {
         if (context == null) {
             throw new IllegalStateException("Context can't be null");
         }
@@ -138,6 +143,8 @@ public class OkCache {
             throw new IllegalStateException("Do you forget to initialize OkCache?");
         }
     }
+
+
 
     public static class InitParams {
         private String cacheDir;
