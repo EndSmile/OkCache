@@ -33,6 +33,7 @@ public class OkCacheInterceptor implements Interceptor {
 
         String cacheTypeStr = request.header(HeaderParams.CACHE_STRATEGY);
 
+        //缓存类型默认是CACHE_ELSE_NETWORK
         int cacheType = CacheStrategy.CACHE_ELSE_NETWORK;
         if (cacheTypeStr != null) {
             cacheType = Integer.valueOf(cacheTypeStr);

@@ -33,7 +33,7 @@ public class CacheWhileNetCallInterceptor<T> implements CallInterceptor<T> {
     }
 
     @Nullable
-    private Call<T> getStrategyCall(Call<T> call, int strategy) {
+    private static <T> Call<T> getStrategyCall(Call<T> call, int strategy) {
         try {
             HookOkHttpCall cacheHookCall = new HookOkHttpCall(call);
             Request request = cacheHookCall.getRequest();
@@ -57,7 +57,7 @@ public class CacheWhileNetCallInterceptor<T> implements CallInterceptor<T> {
         } catch (Throwable ignored) {
         }
         if (response != null && response.isSuccessful()) {
-            callArbiter.emitResponse(response,false);
+            callArbiter.emitResponse(response, false);
         }
 
         try {
@@ -67,6 +67,6 @@ public class CacheWhileNetCallInterceptor<T> implements CallInterceptor<T> {
             callArbiter.emitError(t);
             return;
         }
-        callArbiter.emitResponse(response,true);
+        callArbiter.emitResponse(response, true);
     }
 }

@@ -16,7 +16,7 @@ public class HeaderParams {
     public static final String CACHE_STRATEGY = "okcache_cacheStrategy";//请求缓存类型
 
     public static Request.Builder setCacheStrategy(Request.Builder builder,int cacheStrategy){
-        if (CacheStrategy.isValidStrategy(cacheStrategy)){
+        if (!CacheStrategy.isValidStrategy(cacheStrategy)){
             return builder;
         }
         return builder.removeHeader(CACHE_STRATEGY)
