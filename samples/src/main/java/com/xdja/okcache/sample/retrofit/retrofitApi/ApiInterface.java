@@ -1,6 +1,7 @@
 package com.xdja.okcache.sample.retrofit.retrofitApi;
 
 import com.xdja.okcache.constant.HeaderParams;
+import com.xdja.okcache.retrofit.adapter.rxjava.OkCacheObservable;
 import com.xdja.okcache.sample.bean.Contributor;
 
 import java.util.List;
@@ -20,7 +21,7 @@ public interface ApiInterface {
             , @Header(HeaderParams.CACHE_STRATEGY) int requestCacheType);
 
     @GET("/repos/{owner}/{repo}/contributors")
-    com.xdja.okcache.retrofit.adapter.rxjava.OkCacheObservable<List<Contributor>> contributorsObservable(@Path("owner") String owner
+    OkCacheObservable<List<Contributor>> contributorsObservable(@Path("owner") String owner
             , @Path("repo") String repo);
 
 
