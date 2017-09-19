@@ -12,10 +12,14 @@ import com.xdja.okcache.sample.bean.Contributor;
 import com.xdja.okcache.sample.retrofit.RetrofitGenerator;
 import com.xdja.okcache.sample.retrofit.retrofitApi.ApiInterface;
 
+import java.security.InvalidParameterException;
 import java.util.List;
 
+import rx.Emitter;
+import rx.Observable;
 import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
+import rx.functions.Action1;
 import rx.schedulers.Schedulers;
 
 public class RetrofitActivity extends AppCompatActivity {
@@ -34,7 +38,7 @@ public class RetrofitActivity extends AppCompatActivity {
     }
 
     public void request(View view) {
-        service.contributorsObservable("square","retrofit")
+        service.contributorsObservable("square", "retrofit")
                 .setCallInterceptor(new CacheWhileNetCallInterceptor<List<Contributor>>())
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())

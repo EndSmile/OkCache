@@ -1,4 +1,4 @@
-package com.xdja.okcache.common;
+package com.xdja.okcache;
 
 import android.support.annotation.Nullable;
 
@@ -75,7 +75,9 @@ public class CacheTest {
 
     @Before
     public void init() {
-        OkCache.init(RuntimeEnvironment.application, null);
+        if (OkCache.context==null){
+            OkCache.init(RuntimeEnvironment.application, null);
+        }
     }
 
     @Test

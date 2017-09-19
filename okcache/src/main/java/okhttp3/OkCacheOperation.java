@@ -17,6 +17,9 @@ package okhttp3;
 
 import android.support.annotation.Nullable;
 
+import com.xdja.okcache.KeyUtil;
+import com.xdja.okcache.OkCache;
+
 import java.io.Closeable;
 import java.io.EOFException;
 import java.io.File;
@@ -143,9 +146,6 @@ public final class OkCacheOperation implements Closeable, Flushable {
     private static final int ENTRY_BODY = 1;
     private static final int ENTRY_COUNT = 2;
 
-    private static final Charset UTF8 = Charset.forName("UTF-8");
-
-
     final DiskLruCache cache;
 
     /* read and write statistics, all guarded by 'this' */
@@ -163,17 +163,10 @@ public final class OkCacheOperation implements Closeable, Flushable {
         this.cache = DiskLruCache.create(fileSystem, directory, VERSION, ENTRY_COUNT, maxSize);
     }
 
-    public static String key(HttpUrl url) {
-        return key(url.toString());
-    }
-
-    public static String key(String string) {
-        return ByteString.encodeUtf8(string).md5().hex();
-    }
 
     @Nullable
     public Response get(Request request) {
-        String key = getKey(request);
+        String key = OkCache.getKey(request);
         if (key == null) {
             return null;
         }
@@ -209,59 +202,7 @@ public final class OkCacheOperation implements Closeable, Flushable {
         return response;
     }
 
-    @Nullable
-    public static String getKey(Request request) {
-        if (request.method().equals("POST")) {
-            try {
-                RequestBody requestBody = request.body();
-                if (requestBody == null) {
-                    return null;
-                }
 
-                String requestBodyStr = getRequestBodyStr(requestBody);
-                if (requestBodyStr != null) {
-                    return key(request.url() + "_" + requestBodyStr);
-                }
-                return null;
-            } catch (Exception e) {
-                e.printStackTrace();
-                return null;
-            }
-        }
-
-        return key(request.url());
-    }
-
-    @Nullable
-    public static String getRequestBodyStr(RequestBody requestBody) {
-        return getRequestBodyStr(requestBody, true);
-    }
-
-    @Nullable
-    public static String getRequestBodyStr(RequestBody requestBody, boolean isPlainVerify) {
-        if (requestBody == null) {
-            return null;
-        }
-
-        try {
-            Buffer buffer = new Buffer();
-            requestBody.writeTo(buffer);
-
-            Charset charset = UTF8;
-            MediaType contentType = requestBody.contentType();
-            if (contentType != null) {
-                charset = contentType.charset(UTF8);
-            }
-
-            if (!isPlainVerify || isPlaintext(buffer)) {
-                return buffer.readString(charset);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
-        }
-        return null;
-    }
 
     @Nullable
     public CacheRequest put(Response response) {
@@ -288,7 +229,7 @@ public final class OkCacheOperation implements Closeable, Flushable {
 //        System.out.println("put:"+entry);
         DiskLruCache.Editor editor = null;
         try {
-            String key = getKey(response.request());
+            String key = OkCache.getKey(response.request());
             if (key == null) {
                 return null;
             }
@@ -305,7 +246,7 @@ public final class OkCacheOperation implements Closeable, Flushable {
     }
 
     public void remove(Request request) throws IOException {
-        String key = getKey(request);
+        String key = OkCache.getKey(request);
         if (key != null) {
             cache.remove(key);
         }
@@ -672,7 +613,7 @@ public final class OkCacheOperation implements Closeable, Flushable {
             this.varyHeaders = HttpHeaders.varyHeaders(response);
             this.requestMethod = response.request().method();
             RequestBody requestBody = response.request().body();
-            this.requestBody = getRequestBodyStr(requestBody, false);
+            this.requestBody = KeyUtil.getRequestBodyStr(requestBody, false);
             if (requestBody != null) {
                 this.requestMediaType = requestBody.contentType();
             }
@@ -891,27 +832,4 @@ public final class OkCacheOperation implements Closeable, Flushable {
         }
     }
 
-    /**
-     * Returns true if the body in question probably contains human readable text. Uses a small sample
-     * of code points to detect unicode control characters commonly used in binary file signatures.
-     */
-    static boolean isPlaintext(Buffer buffer) {
-        try {
-            Buffer prefix = new Buffer();
-            long byteCount = buffer.size() < 64 ? buffer.size() : 64;
-            buffer.copyTo(prefix, 0, byteCount);
-            for (int i = 0; i < 16; i++) {
-                if (prefix.exhausted()) {
-                    break;
-                }
-                int codePoint = prefix.readUtf8CodePoint();
-                if (Character.isISOControl(codePoint) && !Character.isWhitespace(codePoint)) {
-                    return false;
-                }
-            }
-            return true;
-        } catch (EOFException e) {
-            return false; // Truncated UTF-8 sequence.
-        }
-    }
 }

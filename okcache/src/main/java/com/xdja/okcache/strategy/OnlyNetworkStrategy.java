@@ -49,7 +49,7 @@ public class OnlyNetworkStrategy implements IRequestStrategy {
 //            }
 
             CacheRequest cacheRequest = cacheOperation.put(response);
-            OkCache.putCacheTime(OkCacheOperation.getKey(request));
+            OkCache.putCacheTime(OkCache.getKey(request));
             return cacheWritingResponse(cacheRequest, response);
         }
 

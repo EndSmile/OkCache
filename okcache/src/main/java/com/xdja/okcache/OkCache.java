@@ -16,18 +16,20 @@ import okhttp3.Request;
 
 /**
  * Created by ldy on 2017/8/24.
+ *
+ * OkCache的入口类，必须先调用{@link #init(Context, InitParams)}/{@link #init(Context)}方法
  */
 
 public class OkCache {
     private static final long DEFAULT_CACHE_SIZE = 1024 * 1024 * 50;
     private static final long DEFAULT_MAX_STALE = 60 * 60 * 24 * 30;//过期时间为30天
-    private static Context context;
+    static Context context;
     private static InitParams initParams;
     private static String cacheDirPath;
     private static OkCacheOperation okCacheOperation;
 
     public static void init(Context context) {
-        init(context,null);
+        init(context, null);
     }
 
     public static void init(Context context, @Nullable InitParams initParams) {
@@ -43,6 +45,9 @@ public class OkCache {
         }
         if (initParams.maxCacheSize <= 0) {
             initParams.maxCacheSize = DEFAULT_CACHE_SIZE;
+        }
+        if (initParams.keyGenerator == null) {
+            initParams.keyGenerator = new DefaultKeyGenerator();
         }
         OkCache.initParams = initParams;
     }
@@ -138,20 +143,50 @@ public class OkCache {
         }
     }
 
+    /**
+     * 根据request获取key值
+     * @return null则获取失败
+     */
+    @Nullable
+    public static String getKey(Request request){
+        assertInitialization();
+        if (request==null){
+            return null;
+        }
+        return initParams.keyGenerator.generateKey(request);
+    }
+
     private static void assertInitialization() {
         if (initParams == null) {
             throw new IllegalStateException("Do you forget to initialize OkCache?");
         }
     }
 
-
-
     public static class InitParams {
+        /**
+         * 缓存文件夹
+         */
         private String cacheDir;
+        /**
+         * 最大缓存size
+         */
         private long maxCacheSize;
+        /**
+         * 默认最大缓存日期(某些策略例如：ByStaleStrategy使用)，其它策略此属性不影响
+         */
         private long maxStale;
+        /**
+         * 对Get请求是否开启缓存功能，关闭后还可通过request传参单独开启
+         */
         private boolean enableGetCache;
+        /**
+         * 对Post请求是否开启缓存功能，关闭后还可通过request传参单独开启
+         */
         private boolean enablePostCache;
+        /**
+         *
+         */
+        private KeyGenerator keyGenerator;
 
         public InitParams setCacheDir(String cacheDir) {
             this.cacheDir = cacheDir;
@@ -170,6 +205,11 @@ public class OkCache {
 
         public InitParams enablePostCache() {
             enablePostCache = true;
+            return this;
+        }
+
+        public InitParams setKeyGenerator(KeyGenerator keyGenerator) {
+            this.keyGenerator = keyGenerator;
             return this;
         }
     }

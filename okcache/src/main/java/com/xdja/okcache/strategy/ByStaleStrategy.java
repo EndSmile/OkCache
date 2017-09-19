@@ -1,5 +1,6 @@
 package com.xdja.okcache.strategy;
 
+import com.xdja.okcache.KeyUtil;
 import com.xdja.okcache.OkCache;
 import com.xdja.okcache.constant.QueryParams;
 
@@ -33,7 +34,7 @@ public class ByStaleStrategy implements IRequestStrategy {
 
         Response cacheResponse = new OnlyCacheStrategy().request(chain);
         if (cacheResponse.isSuccessful()) {
-            long cacheTime = OkCache.getCacheTime(OkCacheOperation.getKey(request));
+            long cacheTime = OkCache.getCacheTime(OkCache.getKey(request));
             if (System.currentTimeMillis() - cacheTime <= maxStale) {
                 //没有过期则使用缓存
                 return cacheResponse;
