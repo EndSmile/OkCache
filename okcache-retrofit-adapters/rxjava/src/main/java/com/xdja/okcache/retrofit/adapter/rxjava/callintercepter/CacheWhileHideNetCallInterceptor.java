@@ -1,28 +1,23 @@
 package com.xdja.okcache.retrofit.adapter.rxjava.callintercepter;
 
-import android.support.annotation.Nullable;
-
 import com.xdja.okcache.constant.CacheStrategy;
-import com.xdja.okcache.constant.HeaderParams;
 import com.xdja.okcache.retrofit.adapter.rxjava.CallArbiter;
 import com.xdja.okcache.retrofit.adapter.rxjava.ModifyCallUtil;
 
 import java.util.Arrays;
 import java.util.List;
 
-import okhttp3.Request;
 import retrofit2.Call;
-import retrofit2.HookOkHttpCall;
 import retrofit2.Response;
 import rx.exceptions.Exceptions;
 
 /**
  * Created by ldy on 2017/9/7.
- * <p>
- * 先获取缓存数据并返回给上层(如果没有或错误则不返回)，同时请求网络并将结果反馈
+ *
+ * 先获取缓存数据并返回给上层(如果没有或错误则不返回)，同时请求网络如果上次成功则不返回，否则返回
  */
 
-public class CacheWhileNetCallInterceptor<T> implements CallInterceptor<T> {
+public class CacheWhileHideNetCallInterceptor<T> implements CallInterceptor<T> {
 
     private Call<T> cacheCall;
     private Call<T> netCall;
@@ -43,15 +38,22 @@ public class CacheWhileNetCallInterceptor<T> implements CallInterceptor<T> {
         } catch (Throwable ignored) {
         }
         if (response != null && response.isSuccessful()) {
-            callArbiter.emitResponse(response, false);
+            //如果缓存访问成功则发送缓存并结束事件，然后重新执行一次网络请求
+            callArbiter.emitResponse(response, true);
+            try {
+                netCall.execute();
+            } catch (Throwable ignore) {
+            }
+        }else {
+            //如果缓存访问失败则按照正常的流程重新访问
+            try {
+                response = netCall.execute();
+                callArbiter.emitResponse(response, true);
+            } catch (Throwable t) {
+                Exceptions.throwIfFatal(t);
+                callArbiter.emitError(t);
+            }
         }
 
-        try {
-            response = netCall.execute();
-            callArbiter.emitResponse(response, true);
-        } catch (Throwable t) {
-            Exceptions.throwIfFatal(t);
-            callArbiter.emitError(t);
-        }
     }
 }

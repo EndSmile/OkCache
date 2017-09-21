@@ -198,6 +198,10 @@ public class OkCache {
             return this;
         }
 
+        public void setMaxStale(long maxStale) {
+            this.maxStale = maxStale;
+        }
+
         public InitParams enableGetCache() {
             enableGetCache = true;
             return this;
@@ -212,6 +216,7 @@ public class OkCache {
             this.keyGenerator = keyGenerator;
             return this;
         }
+
     }
 
 }

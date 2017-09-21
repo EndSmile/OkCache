@@ -30,8 +30,10 @@ public class OnlyNetworkStrategy implements IRequestStrategy {
 
     @Override
     public Response request(Interceptor.Chain chain) throws IOException {
+        //过滤参数
         Request request = OkCache.stripSelfParams(chain.request());
 
+        //请求网络
         Response networkResponse = chain.proceed(request);
         if (networkResponse.isSuccessful()) {
             OkCacheOperation cacheOperation = OkCache.getCacheOperation();
@@ -44,11 +46,9 @@ public class OnlyNetworkStrategy implements IRequestStrategy {
             }
             Response response = builder.build();
 
-//            if (cacheResponse!=null){
-//                cacheOperation.remove(request);
-//            }
-
+            //更新缓存
             CacheRequest cacheRequest = cacheOperation.put(response);
+            //更新缓存时间
             OkCache.putCacheTime(OkCache.getKey(request));
             return cacheWritingResponse(cacheRequest, response);
         }
