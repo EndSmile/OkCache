@@ -10,13 +10,14 @@ import com.xdja.okcache.constant.HeaderParams;
 import com.xdja.okcache.constant.QueryParams;
 
 import java.io.File;
+import java.io.IOException;
 
 import okhttp3.OkCacheOperation;
 import okhttp3.Request;
 
 /**
  * Created by ldy on 2017/8/24.
- *
+ * <p>
  * OkCache的入口类，必须先调用{@link #init(Context, InitParams)}/{@link #init(Context)}方法
  */
 
@@ -98,6 +99,17 @@ public class OkCache {
         return okCacheOperation;
     }
 
+    public static boolean clearCache() {
+        assertInitialization();
+        try {
+            okCacheOperation.delete();
+            okCacheOperation = null;
+            return true;
+        } catch (IOException ignored) {
+        }
+        return false;
+    }
+
     public static long getMaxStale() {
         assertInitialization();
         if (initParams.maxStale <= 0) {
@@ -145,12 +157,13 @@ public class OkCache {
 
     /**
      * 根据request获取key值
+     *
      * @return null则获取失败
      */
     @Nullable
-    public static String getKey(Request request){
+    public static String getKey(Request request) {
         assertInitialization();
-        if (request==null){
+        if (request == null) {
             return null;
         }
         return initParams.keyGenerator.generateKey(request);

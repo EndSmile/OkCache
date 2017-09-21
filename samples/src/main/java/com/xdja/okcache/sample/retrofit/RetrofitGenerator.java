@@ -39,9 +39,7 @@ public class RetrofitGenerator {
 
 
     private void initRetrofit() {
-        builder = new Retrofit.Builder()
-                .baseUrl(HOST)
-                .client(client)
+        builder = new Retrofit.Builder().baseUrl(HOST).client(client)
                 .addConverterFactory(GsonConverterFactory.create())
                 .addCallAdapterFactory(RxJavaCallAdapterFactory.create());
     }
